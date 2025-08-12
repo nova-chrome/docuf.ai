@@ -1,7 +1,13 @@
 "use client";
 
-import { FileText, UploadIcon, X } from "lucide-react";
-import { useRef } from "react";
+import {
+  AlertCircle,
+  CheckCircle,
+  FileText,
+  UploadIcon,
+  X,
+} from "lucide-react";
+import { useEffect, useRef, useState } from "react";
 import { Alert, AlertDescription } from "~/components/ui/alert";
 import { Button } from "~/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
@@ -10,6 +16,7 @@ import {
   useFileUpload,
   type FileWithPreview,
 } from "~/hooks/use-file-upload";
+import { checkPDFFormFields, type PDFFormInfo } from "~/lib/pdf-utils";
 import { cn } from "~/lib/utils";
 
 interface UploadStepProps {
@@ -18,6 +25,8 @@ interface UploadStepProps {
 
 export function UploadStep({ onNext }: UploadStepProps) {
   const fileInfoRef = useRef<HTMLDivElement>(null);
+  const [pdfFormInfo, setPdfFormInfo] = useState<PDFFormInfo | null>(null);
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
 
   const [
     { files, isDragging, errors },
@@ -44,9 +53,41 @@ export function UploadStep({ onNext }: UploadStepProps) {
             block: "start",
           });
         }, 100);
+      } else {
+        // Clear PDF analysis when files are removed
+        setPdfFormInfo(null);
+        setIsAnalyzing(false);
       }
     },
   });
+
+  // Analyze PDF when a file is uploaded
+  useEffect(() => {
+    const analyzePDF = async () => {
+      if (files.length > 0) {
+        const fileWithPreview = files[0];
+        if (fileWithPreview.file instanceof File) {
+          setIsAnalyzing(true);
+          try {
+            const formInfo = await checkPDFFormFields(fileWithPreview.file);
+            setPdfFormInfo(formInfo);
+          } catch (error) {
+            console.error("Error analyzing PDF:", error);
+            setPdfFormInfo({
+              hasFormFields: false,
+              formFieldCount: 0,
+              fieldTypes: [],
+              error: "Failed to analyze PDF",
+            });
+          } finally {
+            setIsAnalyzing(false);
+          }
+        }
+      }
+    };
+
+    analyzePDF();
+  }, [files]);
 
   return (
     <Card className="shadow-lg">
@@ -81,7 +122,7 @@ export function UploadStep({ onNext }: UploadStepProps) {
 
         {/* File Info Section */}
         {files.length > 0 && (
-          <div ref={fileInfoRef} className="mt-6">
+          <div ref={fileInfoRef} className="mt-6 space-y-4">
             {files.map((fileWithPreview: FileWithPreview) => (
               <div
                 key={fileWithPreview.id}
@@ -99,7 +140,9 @@ export function UploadStep({ onNext }: UploadStepProps) {
                   </div>
                 </div>
                 <div className="flex items-center gap-2">
-                  <Button onClick={onNext}>Continue</Button>
+                  <Button onClick={onNext} disabled={isAnalyzing}>
+                    {isAnalyzing ? "Analyzing..." : "Continue"}
+                  </Button>
                   <Button
                     variant="ghost"
                     size="icon"
@@ -111,6 +154,59 @@ export function UploadStep({ onNext }: UploadStepProps) {
                 </div>
               </div>
             ))}
+
+            {/* PDF Analysis Results */}
+            {pdfFormInfo && (
+              <div className="p-4 bg-muted rounded-lg">
+                <div className="flex items-start gap-3">
+                  {pdfFormInfo.error ? (
+                    <AlertCircle className="w-5 h-5 text-destructive mt-0.5" />
+                  ) : pdfFormInfo.hasFormFields ? (
+                    <CheckCircle className="w-5 h-5 text-green-600 mt-0.5" />
+                  ) : (
+                    <AlertCircle className="w-5 h-5 text-yellow-600 mt-0.5" />
+                  )}
+                  <div className="flex-1">
+                    <h4 className="font-medium text-foreground mb-1">
+                      PDF Analysis
+                    </h4>
+                    {pdfFormInfo.error ? (
+                      <p className="text-sm text-muted-foreground">
+                        {pdfFormInfo.error}
+                      </p>
+                    ) : pdfFormInfo.hasFormFields ? (
+                      <div className="text-sm text-muted-foreground">
+                        <p className="mb-1">
+                          ✅ Found {pdfFormInfo.formFieldCount} fillable field
+                          {pdfFormInfo.formFieldCount === 1 ? "" : "s"}
+                        </p>
+                        {pdfFormInfo.fieldTypes.length > 0 && (
+                          <p>
+                            Field types: {pdfFormInfo.fieldTypes.join(", ")}
+                          </p>
+                        )}
+                      </div>
+                    ) : (
+                      <p className="text-sm text-muted-foreground">
+                        ⚠️ No fillable form fields detected. This PDF may not be
+                        fillable or may require OCR processing.
+                      </p>
+                    )}
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {isAnalyzing && (
+              <div className="p-4 bg-muted rounded-lg">
+                <div className="flex items-center gap-3">
+                  <div className="w-5 h-5 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+                  <p className="text-sm text-muted-foreground">
+                    Analyzing PDF for form fields...
+                  </p>
+                </div>
+              </div>
+            )}
           </div>
         )}
 
