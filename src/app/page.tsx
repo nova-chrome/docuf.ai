@@ -5,11 +5,15 @@ import { DownloadStep } from "~/features/document/components/download-step";
 import { FillFormStep } from "~/features/document/components/fill-form-step";
 import { ReviewStep } from "~/features/document/components/review-step";
 import { UploadStep } from "~/features/document/components/upload-step";
-import { useDocumentSteps } from "~/features/document/hooks/use-document-steps";
+import {
+  useDocumentStepsActions,
+  useDocumentStepsCurrentStep,
+} from "~/features/document/stores/document-steps-store";
 
 export default function Home() {
-  const { currentStep, nextStep, previousStep, resetToFirstStep } =
-    useDocumentSteps();
+  const currentStep = useDocumentStepsCurrentStep();
+  const { nextStep, previousStep, resetToFirstStep } =
+    useDocumentStepsActions();
 
   return (
     <div className="min-h-screen flex flex-col items-center p-8 bg-gray-50">
@@ -25,10 +29,8 @@ export default function Home() {
         </p>
       </div>
 
-      {/* Stepper Section */}
       <DocumentFormSteps className="w-full max-w-6xl mb-16" />
 
-      {/* Content Section - Changes based on current step */}
       <div className="w-full max-w-2xl">
         {currentStep === 1 && <UploadStep onNext={nextStep} />}
 

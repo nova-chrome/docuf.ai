@@ -10,15 +10,19 @@ import {
   StepperTitle,
   StepperTrigger,
 } from "~/components/ui/stepper";
-import { useDocumentSteps } from "~/features/document/hooks/use-document-steps";
+import {
+  useDocumentStepsActions,
+  useDocumentStepsCurrentStep,
+} from "~/features/document/stores/document-steps-store";
+import { DOCUMENT_STEPS } from "../constants/document-steps.constants";
 
 interface DocumentFormStepsProps {
   className?: string;
 }
 
 export function DocumentFormSteps({ className }: DocumentFormStepsProps) {
-  const { steps, currentStep, goToStep, isStepCompleted, isStepActive } =
-    useDocumentSteps();
+  const { goToStep } = useDocumentStepsActions();
+  const currentStep = useDocumentStepsCurrentStep();
 
   return (
     <div className={className}>
@@ -32,10 +36,10 @@ export function DocumentFormSteps({ className }: DocumentFormStepsProps) {
         }}
       >
         <StepperNav>
-          {steps.map((stepItem, index) => {
+          {DOCUMENT_STEPS.map((stepItem, index) => {
             const Icon = stepItem.icon;
-            const isCompleted = isStepCompleted(stepItem.id);
-            const isActive = isStepActive(stepItem.id);
+            const isCompleted = currentStep > stepItem.id;
+            const isActive = currentStep === stepItem.id;
 
             return (
               <StepperItem
@@ -69,7 +73,7 @@ export function DocumentFormSteps({ className }: DocumentFormStepsProps) {
                     </p>
                   </div>
                 </StepperTrigger>
-                {index < steps.length - 1 && (
+                {index < DOCUMENT_STEPS.length - 1 && (
                   <StepperSeparator
                     className={`mx-4 ${
                       currentStep > stepItem.id ? "bg-primary" : "bg-muted"
