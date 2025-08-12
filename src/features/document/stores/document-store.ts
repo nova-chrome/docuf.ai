@@ -26,23 +26,25 @@ const useDocumentStore = create<DocumentStore>((set) => ({
 
       const result = await tryCatch(checkPDFFormFields(file));
 
-      if (result.error) {
-        console.error("Error analyzing PDF:", result.error);
-        set({
-          pdfFormInfo: {
-            hasFormFields: false,
-            formFieldCount: 0,
-            fieldTypes: [],
-            error: "Failed to analyze PDF",
-          },
-          isAnalyzing: false,
-        });
-      } else {
-        set({
+      set((prev) => {
+        if (result.error) {
+          return {
+            ...prev,
+            pdfFormInfo: {
+              hasFormFields: false,
+              formFieldCount: 0,
+              fieldTypes: [],
+              error: "Failed to analyze PDF",
+            },
+            isAnalyzing: false,
+          };
+        }
+
+        return {
           pdfFormInfo: result.data as PDFFormInfo,
           isAnalyzing: false,
-        });
-      }
+        };
+      });
     },
 
     clearAnalysis: () => {
