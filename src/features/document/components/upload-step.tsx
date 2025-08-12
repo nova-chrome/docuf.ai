@@ -7,7 +7,7 @@ import {
   UploadIcon,
   X,
 } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import { Alert, AlertDescription } from "~/components/ui/alert";
 import { Button } from "~/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
@@ -16,8 +16,9 @@ import {
   useFileUpload,
   type FileWithPreview,
 } from "~/hooks/use-file-upload";
-import { checkPDFFormFields, type PDFFormInfo } from "~/lib/pdf-utils";
 import { cn } from "~/lib/utils";
+import { checkPDFFormFields, type PDFFormInfo } from "~/util/pdf-utils";
+import { tryCatch } from "~/util/try-catch";
 
 interface UploadStepProps {
   onNext: () => void;
@@ -27,6 +28,26 @@ export function UploadStep({ onNext }: UploadStepProps) {
   const fileInfoRef = useRef<HTMLDivElement>(null);
   const [pdfFormInfo, setPdfFormInfo] = useState<PDFFormInfo | null>(null);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
+
+  const analyzePDF = useCallback(async (file: File) => {
+    setIsAnalyzing(true);
+
+    const result = await tryCatch(checkPDFFormFields(file));
+
+    if (result.error) {
+      console.error("Error analyzing PDF:", result.error);
+      setPdfFormInfo({
+        hasFormFields: false,
+        formFieldCount: 0,
+        fieldTypes: [],
+        error: "Failed to analyze PDF",
+      });
+    } else {
+      setPdfFormInfo(result.data as PDFFormInfo);
+    }
+
+    setIsAnalyzing(false);
+  }, []);
 
   const [
     { files, isDragging, errors },
@@ -59,35 +80,16 @@ export function UploadStep({ onNext }: UploadStepProps) {
         setIsAnalyzing(false);
       }
     },
-  });
-
-  // Analyze PDF when a file is uploaded
-  useEffect(() => {
-    const analyzePDF = async () => {
-      if (files.length > 0) {
-        const fileWithPreview = files[0];
+    onFilesAdded: (addedFiles: FileWithPreview[]) => {
+      // Analyze PDF immediately when files are added
+      if (addedFiles.length > 0) {
+        const fileWithPreview = addedFiles[0];
         if (fileWithPreview.file instanceof File) {
-          setIsAnalyzing(true);
-          try {
-            const formInfo = await checkPDFFormFields(fileWithPreview.file);
-            setPdfFormInfo(formInfo);
-          } catch (error) {
-            console.error("Error analyzing PDF:", error);
-            setPdfFormInfo({
-              hasFormFields: false,
-              formFieldCount: 0,
-              fieldTypes: [],
-              error: "Failed to analyze PDF",
-            });
-          } finally {
-            setIsAnalyzing(false);
-          }
+          analyzePDF(fileWithPreview.file);
         }
       }
-    };
-
-    analyzePDF();
-  }, [files]);
+    },
+  });
 
   return (
     <Card className="shadow-lg">

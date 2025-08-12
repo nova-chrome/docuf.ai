@@ -1,4 +1,5 @@
 import { PDFDocument } from "pdf-lib";
+import { tryCatch } from "./try-catch";
 
 export interface PDFFormInfo {
   hasFormFields: boolean;
@@ -13,7 +14,7 @@ export interface PDFFormInfo {
  * @returns Promise with form information
  */
 export async function checkPDFFormFields(file: File): Promise<PDFFormInfo> {
-  try {
+  const analyzePDF = async (): Promise<PDFFormInfo> => {
     // Convert file to array buffer
     const arrayBuffer = await file.arrayBuffer();
 
@@ -44,15 +45,24 @@ export async function checkPDFFormFields(file: File): Promise<PDFFormInfo> {
       formFieldCount: fields.length,
       fieldTypes: uniqueFieldTypes,
     };
-  } catch (error) {
-    console.error("Error analyzing PDF form fields:", error);
+  };
+
+  const result = await tryCatch(analyzePDF());
+
+  if (result.error) {
+    console.error("Error analyzing PDF form fields:", result.error);
     return {
       hasFormFields: false,
       formFieldCount: 0,
       fieldTypes: [],
-      error: error instanceof Error ? error.message : "Unknown error occurred",
+      error:
+        result.error instanceof Error
+          ? result.error.message
+          : "Unknown error occurred",
     };
   }
+
+  return result.data as PDFFormInfo;
 }
 
 /**
@@ -61,7 +71,7 @@ export async function checkPDFFormFields(file: File): Promise<PDFFormInfo> {
  * @returns Promise with detailed field information
  */
 export async function getPDFFormFieldDetails(file: File) {
-  try {
+  const getDetails = async () => {
     const arrayBuffer = await file.arrayBuffer();
     const pdfDoc = await PDFDocument.load(arrayBuffer);
     const form = pdfDoc.getForm();
@@ -94,8 +104,14 @@ export async function getPDFFormFieldDetails(file: File) {
     });
 
     return fieldDetails;
-  } catch (error) {
-    console.error("Error getting PDF form field details:", error);
-    throw error;
+  };
+
+  const result = await tryCatch(getDetails());
+
+  if (result.error) {
+    console.error("Error getting PDF form field details:", result.error);
+    throw result.error;
   }
+
+  return result.data;
 }
