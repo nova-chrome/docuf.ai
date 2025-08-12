@@ -10,11 +10,11 @@ import {
   StepperTitle,
   StepperTrigger,
 } from "~/components/ui/stepper";
+import { DOCUMENT_STEPS } from "~/features/document/constants/document.constants";
 import {
   useDocumentStepsActions,
   useDocumentStepsCurrentStep,
 } from "~/features/document/stores/document-steps.store";
-import { DOCUMENT_STEPS } from "../constants/document-steps.constants";
 
 interface DocumentFormStepsProps {
   className?: string;
