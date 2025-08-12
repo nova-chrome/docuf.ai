@@ -3,22 +3,16 @@ import { checkPDFFormFields, type PDFFormInfo } from "~/util/pdf-utils";
 import { tryCatch } from "~/util/try-catch";
 
 export interface DocumentStore {
-  // PDF Analysis State
   pdfFormInfo: PDFFormInfo | null;
   isAnalyzing: boolean;
-
-  // Actions
   actions: {
     analyzePDF: (file: File) => Promise<void>;
     clearAnalysis: () => void;
   };
 }
 const useDocumentStore = create<DocumentStore>((set) => ({
-  // PDF Analysis State
   pdfFormInfo: null,
   isAnalyzing: false,
-
-  // Actions
   actions: {
     analyzePDF: async (file: File) => {
       set({ isAnalyzing: true });
@@ -55,7 +49,6 @@ const useDocumentStore = create<DocumentStore>((set) => ({
   },
 }));
 
-// Selectors
 export const useDocumentActions = () =>
   useDocumentStore((state) => state.actions);
 

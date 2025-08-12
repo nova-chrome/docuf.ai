@@ -9,7 +9,6 @@ export interface DocumentStep {
 
 export interface DocumentStepsStore {
   currentStep: number;
-
   actions: {
     goToStep: (step: number) => void;
     nextStep: () => void;
@@ -20,7 +19,6 @@ export interface DocumentStepsStore {
 
 const useDocumentStepsStore = create<DocumentStepsStore>((set, get) => ({
   currentStep: 1,
-
   actions: {
     goToStep: (step: number) => {
       if (step >= 1 && step <= 4) {
@@ -48,8 +46,9 @@ const useDocumentStepsStore = create<DocumentStepsStore>((set, get) => ({
   },
 }));
 
-export const useDocumentStepsActions = () =>
-  useDocumentStepsStore((state) => state.actions);
+export const useDocumentStepsActions = () => {
+  return useDocumentStepsStore((state) => state.actions);
+};
 
 export const useDocumentStepsCurrentStep = () =>
   useDocumentStepsStore((state) => state.currentStep);
