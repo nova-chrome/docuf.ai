@@ -1,5 +1,5 @@
 import { DownloadIcon, EditIcon, EyeIcon, UploadIcon } from "lucide-react";
-import { DocumentStep } from "../stores/document-steps-store";
+import { DocumentStep } from "../stores/document-steps.store";
 
 export const DOCUMENT_STEPS: DocumentStep[] = [
   {

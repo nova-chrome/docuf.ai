@@ -16,7 +16,7 @@ import {
   useIsAnalyzing,
   useIsPdfAnalysisValid,
   usePdfFormInfo,
-} from "~/features/document/stores/document-store";
+} from "~/features/document/stores/document.store";
 import {
   formatBytes,
   useFileUpload,

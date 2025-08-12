@@ -13,7 +13,7 @@ import {
 import {
   useDocumentStepsActions,
   useDocumentStepsCurrentStep,
-} from "~/features/document/stores/document-steps-store";
+} from "~/features/document/stores/document-steps.store";
 import { DOCUMENT_STEPS } from "../constants/document-steps.constants";
 
 interface DocumentFormStepsProps {

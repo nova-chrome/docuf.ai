@@ -8,7 +8,7 @@ import { UploadStep } from "~/features/document/components/upload-step";
 import {
   useDocumentStepsActions,
   useDocumentStepsCurrentStep,
-} from "~/features/document/stores/document-steps-store";
+} from "~/features/document/stores/document-steps.store";
 
 export default function Home() {
   const currentStep = useDocumentStepsCurrentStep();
