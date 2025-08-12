@@ -74,35 +74,81 @@ export function UploadStep({ onNext }: UploadStepProps) {
         ) : (
           <div className="space-y-4">
             {files.map((fileWithPreview: FileWithPreview) => (
-              <div
-                key={fileWithPreview.id}
-                className="flex items-center justify-between p-4 bg-gray-50 rounded-lg"
-              >
-                <div className="flex items-center space-x-3">
-                  <FileText className="w-8 h-8 text-red-500" />
-                  <div className="text-left">
-                    <p className="font-medium text-gray-900">
-                      {fileWithPreview.file.name}
-                    </p>
-                    <p className="text-sm text-gray-500">
-                      {formatBytes(fileWithPreview.file.size)}
-                    </p>
+              <div key={fileWithPreview.id} className="space-y-4">
+                {/* File Info */}
+                <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                  <div className="flex items-center space-x-3">
+                    <FileText className="w-8 h-8 text-red-500" />
+                    <div className="text-left">
+                      <p className="font-medium text-gray-900">
+                        {fileWithPreview.file.name}
+                      </p>
+                      <p className="text-sm text-gray-500">
+                        {formatBytes(fileWithPreview.file.size)}
+                      </p>
+                    </div>
                   </div>
+                  <button
+                    onClick={() => removeFile(fileWithPreview.id)}
+                    className="p-1 text-gray-400 hover:text-red-500 transition-colors"
+                  >
+                    <X className="w-5 h-5" />
+                  </button>
                 </div>
-                <button
-                  onClick={() => removeFile(fileWithPreview.id)}
-                  className="p-1 text-gray-400 hover:text-red-500 transition-colors"
-                >
-                  <X className="w-5 h-5" />
-                </button>
+
+                {/* PDF Preview */}
+                {fileWithPreview.preview && (
+                  <div className="border border-gray-200 rounded-lg overflow-hidden">
+                    <div className="bg-gray-100 px-4 py-2 text-sm text-gray-700 font-medium">
+                      PDF Preview
+                    </div>
+                    <div className="aspect-[3/4] bg-white">
+                      <object
+                        data={fileWithPreview.preview}
+                        type="application/pdf"
+                        width="100%"
+                        height="100%"
+                        className="block"
+                      >
+                        <iframe
+                          src={`${fileWithPreview.preview}#toolbar=0&navpanes=0&scrollbar=0`}
+                          width="100%"
+                          height="100%"
+                          className="border-0"
+                          title="PDF Preview"
+                        >
+                          <p className="p-4 text-center text-gray-500">
+                            Your browser doesn&apos;t support PDF preview.
+                            <a
+                              href={fileWithPreview.preview}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-blue-500 hover:underline ml-1"
+                            >
+                              Click here to view the PDF
+                            </a>
+                          </p>
+                        </iframe>
+                      </object>
+                    </div>
+                  </div>
+                )}
               </div>
             ))}
-            <button
-              className="mt-4 bg-blue-500 text-white px-6 py-2 rounded-lg hover:bg-blue-600 transition-colors"
-              onClick={openFileDialog}
-            >
-              Replace File
-            </button>
+            <div className="flex gap-3">
+              <button
+                className="bg-blue-500 text-white px-6 py-2 rounded-lg hover:bg-blue-600 transition-colors"
+                onClick={openFileDialog}
+              >
+                Replace File
+              </button>
+              <button
+                className="bg-green-500 text-white px-6 py-2 rounded-lg hover:bg-green-600 transition-colors"
+                onClick={onNext}
+              >
+                Continue
+              </button>
+            </div>
           </div>
         )}
       </div>
