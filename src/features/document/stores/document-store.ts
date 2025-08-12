@@ -13,7 +13,6 @@ export interface DocumentStore {
     clearAnalysis: () => void;
   };
 }
-
 const useDocumentStore = create<DocumentStore>((set) => ({
   // PDF Analysis State
   pdfFormInfo: null,
@@ -65,3 +64,13 @@ export const usePdfFormInfo = () =>
 
 export const useIsAnalyzing = () =>
   useDocumentStore((state) => state.isAnalyzing);
+
+export const useIsPdfAnalysisValid = () =>
+  useDocumentStore((state) => {
+    return (
+      !state.isAnalyzing &&
+      !state.pdfFormInfo?.error &&
+      state.pdfFormInfo !== null &&
+      state.pdfFormInfo.hasFormFields
+    );
+  });

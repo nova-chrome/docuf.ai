@@ -14,6 +14,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
 import {
   useDocumentActions,
   useIsAnalyzing,
+  useIsPdfAnalysisValid,
   usePdfFormInfo,
 } from "~/features/document/stores/document-store";
 import {
@@ -32,6 +33,7 @@ export function UploadStep({ onNext }: UploadStepProps) {
   const { analyzePDF, clearAnalysis } = useDocumentActions();
   const pdfFormInfo = usePdfFormInfo();
   const isAnalyzing = useIsAnalyzing();
+  const isPdfAnalysisValid = useIsPdfAnalysisValid();
 
   const [
     { files, isDragging, errors },
@@ -127,9 +129,7 @@ export function UploadStep({ onNext }: UploadStepProps) {
                 <div className="flex items-center gap-2">
                   <Button
                     onClick={onNext}
-                    disabled={
-                      isAnalyzing || errors.length > 0 || !!pdfFormInfo?.error
-                    }
+                    disabled={!isPdfAnalysisValid || errors.length > 0}
                   >
                     {isAnalyzing ? "Analyzing..." : "Continue"}
                   </Button>
