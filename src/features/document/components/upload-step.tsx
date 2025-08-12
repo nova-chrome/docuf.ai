@@ -38,10 +38,12 @@ export function UploadStep({ onNext }: UploadStepProps) {
     multiple: false,
     onFilesChange: (files: FileWithPreview[]) => {
       if (files.length > 0) {
-        fileInfoRef.current?.scrollIntoView({
-          behavior: "smooth",
-          block: "start",
-        });
+        setTimeout(() => {
+          fileInfoRef.current?.scrollIntoView({
+            behavior: "smooth",
+            block: "start",
+          });
+        }, 100);
       }
     },
   });
@@ -111,51 +113,6 @@ export function UploadStep({ onNext }: UploadStepProps) {
             ))}
           </div>
         )}
-
-        {/* PDF Preview Section */}
-        {files.length > 0 &&
-          files.map(
-            (fileWithPreview: FileWithPreview) =>
-              fileWithPreview.preview && (
-                <div
-                  key={`preview-${fileWithPreview.id}`}
-                  className="mt-4 border border-border rounded-lg overflow-hidden"
-                >
-                  <div className="bg-secondary px-4 py-2 text-sm text-foreground font-medium">
-                    PDF Preview
-                  </div>
-                  <div className="aspect-[3/4] bg-background">
-                    <object
-                      data={fileWithPreview.preview}
-                      type="application/pdf"
-                      width="100%"
-                      height="100%"
-                      className="block"
-                    >
-                      <iframe
-                        src={`${fileWithPreview.preview}#toolbar=0&navpanes=0&scrollbar=0`}
-                        width="100%"
-                        height="100%"
-                        className="border-0"
-                        title="PDF Preview"
-                      >
-                        <p className="p-4 text-center text-muted-foreground">
-                          Your browser doesn&apos;t support PDF preview.
-                          <a
-                            href={fileWithPreview.preview}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="text-primary hover:underline ml-1"
-                          >
-                            Click here to view the PDF
-                          </a>
-                        </p>
-                      </iframe>
-                    </object>
-                  </div>
-                </div>
-              )
-          )}
 
         {/* Error Messages */}
         {errors.length > 0 && (
