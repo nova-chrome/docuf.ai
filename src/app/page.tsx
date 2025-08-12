@@ -1,11 +1,11 @@
 "use client";
 
+import { DocumentFormSteps } from "~/features/document/components/document-form-steps";
 import { DownloadStep } from "~/features/document/components/download-step";
 import { FillFormStep } from "~/features/document/components/fill-form-step";
 import { ReviewStep } from "~/features/document/components/review-step";
 import { UploadStep } from "~/features/document/components/upload-step";
-import { DocumentFormSteps } from "~/features/document/ui/document-form-steps";
-import { useDocumentSteps } from "~/hooks/use-document-steps";
+import { useDocumentSteps } from "~/features/document/hooks/use-document-steps";
 
 export default function Home() {
   const { currentStep, nextStep, previousStep, resetToFirstStep } =

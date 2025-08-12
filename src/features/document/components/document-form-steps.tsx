@@ -10,7 +10,7 @@ import {
   StepperTitle,
   StepperTrigger,
 } from "~/components/ui/stepper";
-import { useDocumentSteps } from "~/hooks/use-document-steps";
+import { useDocumentSteps } from "~/features/document/hooks/use-document-steps";
 
 interface DocumentFormStepsProps {
   className?: string;
