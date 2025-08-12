@@ -125,7 +125,12 @@ export function UploadStep({ onNext }: UploadStepProps) {
                   </div>
                 </div>
                 <div className="flex items-center gap-2">
-                  <Button onClick={onNext} disabled={isAnalyzing}>
+                  <Button
+                    onClick={onNext}
+                    disabled={
+                      isAnalyzing || errors.length > 0 || !!pdfFormInfo?.error
+                    }
+                  >
                     {isAnalyzing ? "Analyzing..." : "Continue"}
                   </Button>
                   <Button
