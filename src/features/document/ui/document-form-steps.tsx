@@ -28,7 +28,7 @@ export function DocumentFormSteps({ className }: DocumentFormStepsProps) {
         orientation="horizontal"
         className="w-full"
         indicators={{
-          completed: <CheckIcon className="h-4 w-4" />,
+          completed: <CheckIcon className="h-6 w-6" />,
         }}
       >
         <StepperNav>
@@ -45,11 +45,11 @@ export function DocumentFormSteps({ className }: DocumentFormStepsProps) {
                 className="flex items-center flex-1"
               >
                 <StepperTrigger className="flex flex-col items-center gap-2 p-4 hover:bg-gray-50 rounded-lg transition-colors">
-                  <StepperIndicator className="relative">
+                  <StepperIndicator className="relative w-12 h-12">
                     {isCompleted ? (
-                      <CheckIcon className="h-4 w-4" />
+                      <CheckIcon className="h-6 w-6" />
                     ) : (
-                      <Icon className="h-4 w-4" />
+                      <Icon className="h-6 w-6" />
                     )}
                   </StepperIndicator>
                   <div className="text-center">

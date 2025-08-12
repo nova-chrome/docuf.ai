@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { NuqsAdapter } from "nuqs/adapters/next";
 import { PropsWithChildren } from "react";
-import { Navbar } from "~/components/navbar";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -28,7 +27,7 @@ export default function RootLayout({ children }: Readonly<PropsWithChildren>) {
         suppressHydrationWarning
       >
         <NuqsAdapter>
-          <Navbar />
+          {/* <Navbar /> */}
           {children}
         </NuqsAdapter>
       </body>
