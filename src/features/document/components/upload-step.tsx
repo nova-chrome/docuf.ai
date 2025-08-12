@@ -7,18 +7,21 @@ import {
   UploadIcon,
   X,
 } from "lucide-react";
-import { useCallback, useRef, useState } from "react";
+import { useRef } from "react";
 import { Alert, AlertDescription } from "~/components/ui/alert";
 import { Button } from "~/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
+import {
+  useDocumentActions,
+  useIsAnalyzing,
+  usePdfFormInfo,
+} from "~/features/document/stores/document-store";
 import {
   formatBytes,
   useFileUpload,
   type FileWithPreview,
 } from "~/hooks/use-file-upload";
 import { cn } from "~/lib/utils";
-import { checkPDFFormFields, type PDFFormInfo } from "~/util/pdf-utils";
-import { tryCatch } from "~/util/try-catch";
 
 interface UploadStepProps {
   onNext: () => void;
@@ -26,28 +29,9 @@ interface UploadStepProps {
 
 export function UploadStep({ onNext }: UploadStepProps) {
   const fileInfoRef = useRef<HTMLDivElement>(null);
-  const [pdfFormInfo, setPdfFormInfo] = useState<PDFFormInfo | null>(null);
-  const [isAnalyzing, setIsAnalyzing] = useState(false);
-
-  const analyzePDF = useCallback(async (file: File) => {
-    setIsAnalyzing(true);
-
-    const result = await tryCatch(checkPDFFormFields(file));
-
-    if (result.error) {
-      console.error("Error analyzing PDF:", result.error);
-      setPdfFormInfo({
-        hasFormFields: false,
-        formFieldCount: 0,
-        fieldTypes: [],
-        error: "Failed to analyze PDF",
-      });
-    } else {
-      setPdfFormInfo(result.data as PDFFormInfo);
-    }
-
-    setIsAnalyzing(false);
-  }, []);
+  const { analyzePDF, clearAnalysis } = useDocumentActions();
+  const pdfFormInfo = usePdfFormInfo();
+  const isAnalyzing = useIsAnalyzing();
 
   const [
     { files, isDragging, errors },
@@ -76,8 +60,7 @@ export function UploadStep({ onNext }: UploadStepProps) {
         }, 100);
       } else {
         // Clear PDF analysis when files are removed
-        setPdfFormInfo(null);
-        setIsAnalyzing(false);
+        clearAnalysis();
       }
     },
     onFilesAdded: (addedFiles: FileWithPreview[]) => {
