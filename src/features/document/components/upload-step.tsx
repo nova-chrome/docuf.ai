@@ -54,15 +54,13 @@ export function UploadStep({ onNext }: UploadStepProps) {
     multiple: false,
     onFilesChange: (files: FileWithPreview[]) => {
       if (files.length > 0) {
+        clearAnalysis();
         setTimeout(() => {
           fileInfoRef.current?.scrollIntoView({
             behavior: "smooth",
             block: "start",
           });
         }, 100);
-      } else {
-        // Clear PDF analysis when files are removed
-        clearAnalysis();
       }
     },
     onFilesAdded: (addedFiles: FileWithPreview[]) => {
