@@ -17,6 +17,7 @@
     "lucide-react": "^0.539.0",
     "next": "15.4.6",
     "nuqs": "^2.4.3",
+    "pdf-lib": "^1.17.1",
     "react": "19.1.0",
     "react-dom": "19.1.0",
     "tailwind-merge": "^3.3.1"
