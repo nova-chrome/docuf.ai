@@ -58,12 +58,14 @@ export const usePdfFormInfo = () =>
 export const useIsAnalyzing = () =>
   useDocumentStore((state) => state.isAnalyzing);
 
-export const useIsPdfAnalysisValid = () =>
-  useDocumentStore((state) => {
-    return (
-      !state.isAnalyzing &&
-      !state.pdfFormInfo?.error &&
-      state.pdfFormInfo !== null &&
-      state.pdfFormInfo.hasFormFields
-    );
-  });
+export const useIsPdfAnalysisValid = () => {
+  const isAnalyzing = useIsAnalyzing();
+  const pdfFormInfo = usePdfFormInfo();
+
+  return (
+    !isAnalyzing &&
+    !pdfFormInfo?.error &&
+    pdfFormInfo !== null &&
+    pdfFormInfo.hasFormFields
+  );
+};
