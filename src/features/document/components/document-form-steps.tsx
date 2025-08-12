@@ -15,6 +15,7 @@ import {
   useDocumentStepsActions,
   useDocumentStepsCurrentStep,
 } from "~/features/document/stores/document-steps.store";
+import { useIsPdfAnalysisValid } from "../stores/document.store";
 
 interface DocumentFormStepsProps {
   className?: string;
@@ -23,12 +24,20 @@ interface DocumentFormStepsProps {
 export function DocumentFormSteps({ className }: DocumentFormStepsProps) {
   const { goToStep } = useDocumentStepsActions();
   const currentStep = useDocumentStepsCurrentStep();
+  const isPdfAnalysisValid = useIsPdfAnalysisValid();
+
+  function handleStepChange(step: number) {
+    if (!isPdfAnalysisValid) {
+      return;
+    }
+    goToStep(step);
+  }
 
   return (
     <div className={className}>
       <Stepper
         value={currentStep}
-        onValueChange={goToStep}
+        onValueChange={handleStepChange}
         orientation="horizontal"
         className="w-full"
         indicators={{
