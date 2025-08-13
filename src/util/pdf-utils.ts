@@ -13,8 +13,8 @@ export interface PDFFormInfo {
  * @param file - The PDF file to analyze
  * @returns Promise with form information
  */
-export async function checkPDFFormFields(file: File): Promise<PDFFormInfo> {
-  const analyzePDF = async (): Promise<PDFFormInfo> => {
+export async function checkPDFFormFields(file: File) {
+  const analyzePDF = async () => {
     // Convert file to array buffer
     const arrayBuffer = await file.arrayBuffer();
 
@@ -62,7 +62,7 @@ export async function checkPDFFormFields(file: File): Promise<PDFFormInfo> {
     };
   }
 
-  return result.data as PDFFormInfo;
+  return result.data;
 }
 
 /**
