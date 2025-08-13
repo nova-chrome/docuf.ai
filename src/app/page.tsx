@@ -12,8 +12,7 @@ import {
 
 export default function Home() {
   const currentStep = useDocumentStepsCurrentStep();
-  const { nextStep, previousStep, resetToFirstStep } =
-    useDocumentStepsActions();
+  const { nextStep, resetToFirstStep } = useDocumentStepsActions();
 
   return (
     <div className="min-h-screen flex flex-col items-center p-8 bg-gray-50">
@@ -35,11 +34,11 @@ export default function Home() {
         {currentStep === 1 && <UploadStep onNext={nextStep} />}
 
         {currentStep === 2 && (
-          <ReviewStep onNext={nextStep} onPrevious={previousStep} />
+          <ReviewStep onNext={nextStep} onRestart={resetToFirstStep} />
         )}
 
         {currentStep === 3 && (
-          <FillFormStep onNext={nextStep} onPrevious={previousStep} />
+          <FillFormStep onNext={nextStep} onRestart={resetToFirstStep} />
         )}
 
         {currentStep === 4 && <DownloadStep onStartOver={resetToFirstStep} />}

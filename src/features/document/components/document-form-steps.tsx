@@ -15,6 +15,7 @@ import {
   useDocumentStepsActions,
   useDocumentStepsCurrentStep,
 } from "~/features/document/stores/document-steps.store";
+import { cn } from "~/lib/utils";
 import { useIsPdfAnalysisValid } from "../stores/document.store";
 
 interface DocumentFormStepsProps {
@@ -30,7 +31,9 @@ export function DocumentFormSteps({ className }: DocumentFormStepsProps) {
     if (!isPdfAnalysisValid) {
       return;
     }
-    goToStep(step);
+    if (step >= currentStep) {
+      goToStep(step);
+    }
   }
 
   return (
@@ -55,25 +58,25 @@ export function DocumentFormSteps({ className }: DocumentFormStepsProps) {
                 key={stepItem.id}
                 step={stepItem.id}
                 completed={isCompleted}
+                disabled={isCompleted}
                 className="flex items-center flex-1"
               >
-                <StepperTrigger className="flex flex-col items-center gap-2 p-4 hover:bg-gray-50 rounded-lg transition-colors">
+                <StepperTrigger
+                  className={cn(
+                    "flex flex-col items-center gap-2 p-4 rounded-lg transition-colors hover:bg-gray-50 cursor-pointer",
+                    isCompleted && "cursor-not-allowed opacity-75"
+                  )}
+                >
                   <StepperIndicator className="relative w-12 h-12">
-                    {isCompleted ? (
-                      <CheckIcon className="h-6 w-6" />
-                    ) : (
-                      <Icon className="h-6 w-6" />
-                    )}
+                    {isCompleted && <CheckIcon className="h-6 w-6" />}
+                    {!isCompleted && <Icon className="h-6 w-6" />}
                   </StepperIndicator>
                   <div className="text-center">
                     <StepperTitle
-                      className={`text-sm font-medium ${
-                        isActive
-                          ? "text-primary"
-                          : isCompleted
-                          ? "text-primary"
-                          : "text-muted-foreground"
-                      }`}
+                      className={cn(
+                        "text-sm font-medium text-muted-foreground",
+                        (isActive || isCompleted) && "text-primary"
+                      )}
                     >
                       {stepItem.title}
                     </StepperTitle>
@@ -84,9 +87,10 @@ export function DocumentFormSteps({ className }: DocumentFormStepsProps) {
                 </StepperTrigger>
                 {index < DOCUMENT_STEPS.length - 1 && (
                   <StepperSeparator
-                    className={`mx-4 ${
-                      currentStep > stepItem.id ? "bg-primary" : "bg-muted"
-                    }`}
+                    className={cn(
+                      "mx-4 bg-muted",
+                      currentStep > stepItem.id && "bg-primary"
+                    )}
                   />
                 )}
               </StepperItem>

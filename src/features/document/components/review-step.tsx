@@ -2,10 +2,10 @@
 
 interface ReviewStepProps {
   onNext: () => void;
-  onPrevious: () => void;
+  onRestart: () => void;
 }
 
-export function ReviewStep({ onNext, onPrevious }: ReviewStepProps) {
+export function ReviewStep({ onNext, onRestart }: ReviewStepProps) {
   return (
     <div className="bg-white rounded-2xl shadow-lg p-8">
       <h2 className="text-2xl font-bold text-center mb-4">
@@ -23,9 +23,9 @@ export function ReviewStep({ onNext, onPrevious }: ReviewStepProps) {
         </button>
         <button
           className="bg-gray-200 text-gray-700 px-6 py-2 rounded-lg hover:bg-gray-300 transition-colors"
-          onClick={onPrevious}
+          onClick={onRestart}
         >
-          Upload Different File
+          Start Over
         </button>
       </div>
     </div>

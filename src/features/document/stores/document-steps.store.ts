@@ -12,7 +12,6 @@ export interface DocumentStepsStore {
   actions: {
     goToStep: (step: number) => void;
     nextStep: () => void;
-    previousStep: () => void;
     resetToFirstStep: () => void;
   };
 }
@@ -21,7 +20,8 @@ const useDocumentStepsStore = create<DocumentStepsStore>((set, get) => ({
   currentStep: 1,
   actions: {
     goToStep: (step: number) => {
-      if (step >= 1 && step <= 4) {
+      const { currentStep } = get();
+      if (step >= currentStep && step <= 4) {
         set({ currentStep: step });
       }
     },
@@ -30,13 +30,6 @@ const useDocumentStepsStore = create<DocumentStepsStore>((set, get) => ({
       const { currentStep } = get();
       if (currentStep < 4) {
         set({ currentStep: currentStep + 1 });
-      }
-    },
-
-    previousStep: () => {
-      const { currentStep } = get();
-      if (currentStep > 1) {
-        set({ currentStep: currentStep - 1 });
       }
     },
 
