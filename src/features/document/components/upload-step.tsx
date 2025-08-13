@@ -54,7 +54,6 @@ export function UploadStep({ onNext }: UploadStepProps) {
     multiple: false,
     onFilesChange: (files: FileWithPreview[]) => {
       if (files.length > 0) {
-        clearAnalysis();
         setTimeout(() => {
           fileInfoRef.current?.scrollIntoView({
             behavior: "smooth",
@@ -134,7 +133,10 @@ export function UploadStep({ onNext }: UploadStepProps) {
                   <Button
                     variant="ghost"
                     size="icon"
-                    onClick={() => removeFile(fileWithPreview.id)}
+                    onClick={() => {
+                      removeFile(fileWithPreview.id);
+                      clearAnalysis();
+                    }}
                     className="text-muted-foreground hover:text-destructive"
                   >
                     <X className="w-5 h-5" />
