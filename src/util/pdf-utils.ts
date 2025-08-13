@@ -1,4 +1,11 @@
-import { PDFDocument } from "pdf-lib";
+import {
+  PDFCheckBox,
+  PDFDocument,
+  PDFDropdown,
+  PDFRadioGroup,
+  PDFSignature,
+  PDFTextField,
+} from "pdf-lib";
 import { tryCatch } from "./try-catch";
 
 export interface PDFFormInfo {
@@ -6,6 +13,24 @@ export interface PDFFormInfo {
   formFieldCount: number;
   fieldTypes: string[];
   error?: string;
+}
+
+/**
+ * Determines the field type using instanceof checks for reliability across environments
+ * @param field - The PDF form field
+ * @returns The field type as a string
+ */
+function getFieldType(field: unknown): string {
+  if (field instanceof PDFCheckBox) return "PDFCheckBox";
+  if (field instanceof PDFTextField) return "PDFTextField";
+  if (field instanceof PDFDropdown) return "PDFDropdown";
+  if (field instanceof PDFRadioGroup) return "PDFRadioGroup";
+  if (field instanceof PDFSignature) return "PDFSignature";
+
+  // Fallback to constructor name
+  const constructor = (field as { constructor: { name?: string } })
+    ?.constructor;
+  return constructor?.name || "Unknown";
 }
 
 /**
@@ -29,8 +54,8 @@ export async function checkPDFFormFields(file: File) {
 
     // Extract field types
     const fieldTypes = fields.map((field) => {
-      // Get the field type using constructor name as it's more reliable across environments
-      return field.constructor.name;
+      // Use instanceof checks for reliable type detection across environments
+      return getFieldType(field);
     });
 
     // Remove duplicates and sort
@@ -75,8 +100,8 @@ export async function getPDFFormFieldDetails(file: File) {
 
     const fieldDetails = fields.map((field) => {
       const name = field.getName();
-      // Use constructor name instead of getType() for consistency across environments
-      const type = field.constructor.name;
+      // Use instanceof checks for reliable type detection across environments
+      const type = getFieldType(field);
 
       // Get additional properties if available
       const isReadOnly =
