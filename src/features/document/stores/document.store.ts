@@ -4,6 +4,7 @@ import { tryCatch } from "~/util/try-catch";
 
 export interface DocumentStore {
   pdfFormInfo: PDFFormInfo | null;
+  file: File | null;
   isAnalyzing: boolean;
   actions: {
     analyzePDF: (file: File) => Promise<void>;
@@ -12,10 +13,11 @@ export interface DocumentStore {
 }
 const useDocumentStore = create<DocumentStore>((set) => ({
   pdfFormInfo: null,
+  file: null,
   isAnalyzing: false,
   actions: {
     analyzePDF: async (file: File) => {
-      set({ isAnalyzing: true });
+      set({ isAnalyzing: true, file });
 
       const result = await tryCatch(checkPDFFormFields(file));
 
@@ -34,6 +36,7 @@ const useDocumentStore = create<DocumentStore>((set) => ({
         }
 
         return {
+          ...prev,
           pdfFormInfo: result.data as PDFFormInfo,
           isAnalyzing: false,
         };
@@ -43,6 +46,7 @@ const useDocumentStore = create<DocumentStore>((set) => ({
     clearAnalysis: () => {
       set({
         pdfFormInfo: null,
+        file: null,
         isAnalyzing: false,
       });
     },
@@ -54,6 +58,8 @@ export const useDocumentActions = () =>
 
 export const usePdfFormInfo = () =>
   useDocumentStore((state) => state.pdfFormInfo);
+
+export const useDocumentFile = () => useDocumentStore((state) => state.file);
 
 export const useIsAnalyzing = () =>
   useDocumentStore((state) => state.isAnalyzing);
