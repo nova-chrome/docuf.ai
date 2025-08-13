@@ -29,11 +29,7 @@ export async function checkPDFFormFields(file: File) {
 
     // Extract field types
     const fieldTypes = fields.map((field) => {
-      // Get the field type
-      if ("getType" in field && typeof field.getType === "function") {
-        return field.getType();
-      }
-      // Fallback to constructor name
+      // Get the field type using constructor name as it's more reliable across environments
       return field.constructor.name;
     });
 
@@ -79,10 +75,8 @@ export async function getPDFFormFieldDetails(file: File) {
 
     const fieldDetails = fields.map((field) => {
       const name = field.getName();
-      const type =
-        "getType" in field && typeof field.getType === "function"
-          ? field.getType()
-          : field.constructor.name;
+      // Use constructor name instead of getType() for consistency across environments
+      const type = field.constructor.name;
 
       // Get additional properties if available
       const isReadOnly =
