@@ -142,7 +142,7 @@ export function useDownloadFile(): UseDownloadFile {
 
     const contentLength = Number(response.headers.get("content-length")) || -1;
     const reader = response.body.getReader();
-    const chunks: Uint8Array[] = [];
+    const chunks: BlobPart[] = [];
     let received = 0;
 
     // ReadableStream reading loop
