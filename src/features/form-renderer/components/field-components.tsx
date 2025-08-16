@@ -135,7 +135,7 @@ export function SelectField({
 }: SelectFieldProps) {
   return (
     <Select value={value} onValueChange={onChange}>
-      <SelectTrigger aria-invalid={!!error}>
+      <SelectTrigger aria-invalid={!!error} className="w-full">
         <SelectValue placeholder={field.placeholder} />
       </SelectTrigger>
       <SelectContent>
