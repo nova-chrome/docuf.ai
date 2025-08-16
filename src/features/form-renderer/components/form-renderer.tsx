@@ -76,7 +76,7 @@ export function FormRenderer({
         )}
 
         {/* Form fields */}
-        <div className="space-y-4">
+        <div className="space-y-7">
           {schema.fields.map((field) => (
             <form.AppField key={field.id} name={field.name}>
               {(fieldProps) => {
@@ -90,7 +90,7 @@ export function FormRenderer({
                 );
 
                 return (
-                  <fieldProps.FormItem className="space-y-2">
+                  <fieldProps.FormItem className="space-y-1">
                     {shouldShowLabel && (
                       <fieldProps.FormLabel>
                         {field.label}
@@ -110,13 +110,13 @@ export function FormRenderer({
                       />
                     </fieldProps.FormControl>
 
-                    {field.description && (
+                    {field.description && !errorMessage ? (
                       <fieldProps.FormDescription className="text-xs">
                         {field.description}
                       </fieldProps.FormDescription>
+                    ) : (
+                      <fieldProps.FormMessage className="text-xs" />
                     )}
-
-                    <fieldProps.FormMessage className="text-xs" />
                   </fieldProps.FormItem>
                 );
               }}
