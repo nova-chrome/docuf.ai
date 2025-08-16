@@ -38,15 +38,3 @@ export const useDocumentStepsActions = () => {
 
 export const useDocumentStepsCurrentStep = () =>
   useDocumentStepsStore((state) => state.currentStep);
-
-export const useDocumentStepsIsFirstStep = () =>
-  useDocumentStepsStore((state) => state.currentStep === 1);
-
-export const useDocumentStepsIsLastStep = () =>
-  useDocumentStepsStore((state) => state.currentStep === 4);
-
-export const useDocumentStepsIsStepCompleted = (stepId: number) =>
-  useDocumentStepsStore((state) => state.currentStep > stepId);
-
-export const useDocumentStepsIsStepActive = (stepId: number) =>
-  useDocumentStepsStore((state) => state.currentStep === stepId);
