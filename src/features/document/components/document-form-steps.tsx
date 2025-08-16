@@ -28,9 +28,7 @@ export function DocumentFormSteps({ className }: DocumentFormStepsProps) {
   const isPdfAnalysisValid = useIsPdfAnalysisValid();
 
   function handleStepChange(step: number) {
-    if (!isPdfAnalysisValid) {
-      return;
-    }
+    if (!isPdfAnalysisValid) return;
     if (step >= currentStep) {
       goToStep(step);
     }
@@ -62,14 +60,10 @@ export function DocumentFormSteps({ className }: DocumentFormStepsProps) {
                 className="flex items-center flex-1"
               >
                 <StepperTrigger
-                  className={cn(
-                    "flex flex-col items-center gap-2 p-4 rounded-lg transition-colors hover:bg-gray-50 cursor-pointer",
-                    isCompleted && "cursor-not-allowed opacity-75"
-                  )}
+                  className={cn(isCompleted && "cursor-not-allowed opacity-75")}
                 >
                   <StepperIndicator className="relative w-12 h-12">
-                    {isCompleted && <CheckIcon className="h-6 w-6" />}
-                    {!isCompleted && <Icon className="h-6 w-6" />}
+                    <Icon className="h-6 w-6" />
                   </StepperIndicator>
                   <div className="text-center">
                     <StepperTitle
