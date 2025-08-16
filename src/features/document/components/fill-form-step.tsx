@@ -2,10 +2,13 @@
 
 import { useEffect, useState } from "react";
 import { FormRenderer } from "~/features/form-renderer/components/form-renderer";
-import type { FormSchema } from "~/features/form-renderer/types/form-schema.types";
-import { convertPDFToFormSchema } from "~/util/pdf-utils";
+import type {
+  FormData,
+  FormSchema,
+} from "~/features/form-renderer/types/form-schema.types";
+import { convertPDFToFormSchema, fillPdfWithFormData } from "~/util/pdf-utils";
 import { tryCatch } from "~/util/try-catch";
-import { useDocumentFile } from "../stores/document.store";
+import { useDocumentActions, useDocumentFile } from "../stores/document.store";
 
 interface FillFormStepProps {
   onNext: () => void;
@@ -14,8 +17,10 @@ interface FillFormStepProps {
 
 export function FillFormStep({ onNext, onRestart }: FillFormStepProps) {
   const file = useDocumentFile();
+  const { setFormData, setFilledPdfBlob } = useDocumentActions();
   const [formSchema, setFormSchema] = useState<FormSchema | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -42,8 +47,33 @@ export function FillFormStep({ onNext, onRestart }: FillFormStepProps) {
     loadFormSchema();
   }, [file]);
 
-  const handleFormSubmit = () => {
-    onNext();
+  const handleFormSubmit = async (data: FormData) => {
+    if (!file) {
+      setError("No PDF file available");
+      return;
+    }
+
+    setIsSubmitting(true);
+    setError(null);
+
+    try {
+      // Store the form data
+      setFormData(data);
+
+      // Fill the PDF with the form data
+      const filledPdfBlob = await fillPdfWithFormData(file, data);
+
+      // Store the filled PDF blob
+      setFilledPdfBlob(filledPdfBlob);
+
+      // Move to next step
+      onNext();
+    } catch (error) {
+      console.error("Error filling PDF:", error);
+      setError("Failed to generate filled PDF. Please try again.");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   if (isLoading) {
@@ -95,7 +125,9 @@ export function FillFormStep({ onNext, onRestart }: FillFormStepProps) {
         <FormRenderer
           schema={formSchema}
           onSubmit={handleFormSubmit}
-          submitButtonText="Generate Document"
+          submitButtonText={
+            isSubmitting ? "Generating Document..." : "Generate Document"
+          }
           className="mx-auto w-full max-w-2xl space-y-6"
         />
       </div>

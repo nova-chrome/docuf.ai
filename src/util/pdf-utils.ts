@@ -8,6 +8,7 @@ import {
 } from "pdf-lib";
 import type {
   FieldSchema,
+  FormData,
   FormSchema,
 } from "~/features/form-renderer/types/form-schema.types";
 import { tryCatch } from "./try-catch";
@@ -256,6 +257,74 @@ export async function convertPDFToFormSchema(file: File): Promise<FormSchema> {
 
   if (result.error) {
     console.error("Error converting PDF to form schema:", result.error);
+    throw result.error;
+  }
+
+  return result.data;
+}
+
+/**
+ * Fills a PDF form with the provided form data
+ * @param file - The original PDF file
+ * @param formData - The form data to fill in
+ * @returns Promise with the filled PDF as a Blob
+ */
+export async function fillPdfWithFormData(
+  file: File,
+  formData: FormData
+): Promise<Blob> {
+  const fillPdf = async (): Promise<Blob> => {
+    // Convert file to array buffer
+    const arrayBuffer = await file.arrayBuffer();
+
+    // Load the PDF document
+    const pdfDoc = await PDFDocument.load(arrayBuffer);
+
+    // Get the form from the PDF
+    const form = pdfDoc.getForm();
+
+    // Get all form fields
+    const fields = form.getFields();
+
+    // Fill fields based on the form data
+    fields.forEach((field) => {
+      const fieldName = field.getName();
+      const value = formData[fieldName];
+
+      if (value === undefined || value === null) {
+        return; // Skip if no value provided
+      }
+
+      try {
+        if (field instanceof PDFTextField) {
+          field.setText(String(value));
+        } else if (field instanceof PDFCheckBox) {
+          if (Boolean(value)) {
+            field.check();
+          } else {
+            field.uncheck();
+          }
+        } else if (field instanceof PDFDropdown) {
+          field.select(String(value));
+        } else if (field instanceof PDFRadioGroup) {
+          field.select(String(value));
+        }
+      } catch (error) {
+        console.warn(`Failed to fill field ${fieldName}:`, error);
+      }
+    });
+
+    // Save the filled PDF
+    const filledPdfBytes = await pdfDoc.save();
+
+    // Return as Blob
+    return new Blob([filledPdfBytes], { type: "application/pdf" });
+  };
+
+  const result = await tryCatch(fillPdf());
+
+  if (result.error) {
+    console.error("Error filling PDF with form data:", result.error);
     throw result.error;
   }
 
