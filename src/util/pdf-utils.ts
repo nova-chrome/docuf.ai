@@ -317,8 +317,11 @@ export async function fillPdfWithFormData(
     // Save the filled PDF
     const filledPdfBytes = await pdfDoc.save();
 
+    // Convert to Uint8Array to ensure compatibility with Blob constructor
+    const uint8Array = new Uint8Array(filledPdfBytes);
+
     // Return as Blob
-    return new Blob([filledPdfBytes], { type: "application/pdf" });
+    return new Blob([uint8Array], { type: "application/pdf" });
   };
 
   const result = await tryCatch(fillPdf());
