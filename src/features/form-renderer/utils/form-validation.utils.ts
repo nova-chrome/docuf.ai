@@ -109,7 +109,7 @@ export function createDefaultValues(
       ) {
         defaultValues[field.name] = "";
       } else if (field.type === "number") {
-        defaultValues[field.name] = 0;
+        defaultValues[field.name] = "";
       } else if (field.type === "checkbox" || field.type === "switch") {
         defaultValues[field.name] = false;
       } else if (field.type === "date") {
