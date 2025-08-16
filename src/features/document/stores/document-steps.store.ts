@@ -1,12 +1,5 @@
 import { create } from "zustand";
 
-export interface DocumentStep {
-  id: number;
-  title: string;
-  icon: React.ComponentType<{ className?: string }>;
-  description: string;
-}
-
 export interface DocumentStepsStore {
   currentStep: number;
   actions: {

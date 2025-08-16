@@ -1,5 +1,11 @@
 import { DownloadIcon, EditIcon, EyeIcon, UploadIcon } from "lucide-react";
-import { DocumentStep } from "../stores/document-steps.store";
+
+export interface DocumentStep {
+  id: number;
+  title: string;
+  icon: React.ComponentType<{ className?: string }>;
+  description: string;
+}
 
 export const DOCUMENT_STEPS: DocumentStep[] = [
   {
