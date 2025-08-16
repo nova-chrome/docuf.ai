@@ -5,7 +5,10 @@ import { type FormHTMLAttributes, useCallback } from "react";
 import { Button } from "~/components/ui/button";
 import { useAppForm } from "~/components/ui/tanstack-form";
 import type { FormData, FormSchema } from "../types/form-schema.types";
-import { createDefaultValues } from "../utils/form-validation.utils";
+import {
+  createDefaultValues,
+  createFormValidationSchema,
+} from "../utils/form-validation.utils";
 import { FieldRenderer } from "./field-renderer";
 
 interface FormRendererProps
@@ -27,12 +30,16 @@ export function FormRenderer({
 }: FormRendererProps) {
   // Create default values if not provided
   const formDefaultValues = defaultValues ?? createDefaultValues(schema);
+  const formValidationSchema = createFormValidationSchema(schema);
 
   const form = useAppForm({
     defaultValues: formDefaultValues,
     onSubmit: ({ formApi, value }) => {
       onSubmit(value as FormData);
       formApi.reset();
+    },
+    validators: {
+      onChange: formValidationSchema,
     },
   });
 
@@ -71,23 +78,7 @@ export function FormRenderer({
         {/* Form fields */}
         <div className="space-y-4">
           {schema.fields.map((field) => (
-            <form.AppField
-              key={field.id}
-              name={field.name}
-              validators={{
-                onChange: field.required
-                  ? ({ value }) => {
-                      if (
-                        !value ||
-                        (typeof value === "string" && value.trim() === "")
-                      ) {
-                        return `${field.label} is required`;
-                      }
-                      return undefined;
-                    }
-                  : undefined,
-              }}
-            >
+            <form.AppField key={field.id} name={field.name}>
               {(fieldProps) => {
                 const errors = fieldProps.state.meta.errors;
                 const errorMessage =

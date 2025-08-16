@@ -6,47 +6,63 @@ import type { FieldSchema, FormSchema } from "../types/form-schema.types";
  */
 export function createFormValidationSchema(
   formSchema: FormSchema
-): z.ZodSchema {
+): z.ZodObject<z.ZodRawShape> {
   const shape: Record<string, z.ZodTypeAny> = {};
 
   formSchema.fields.forEach((field) => {
     let fieldSchema: z.ZodTypeAny;
 
     switch (field.type) {
-      case "text":
-        fieldSchema = z.string();
+      case "text": {
+        let schema = z.string();
+        if (field.required) {
+          schema = schema.min(1, `${field.label} is required`);
+        }
+        fieldSchema = schema;
         break;
+      }
 
-      case "email":
-        fieldSchema = z
-          .string()
-          .email({ message: "Please enter a valid email address" });
+      case "email": {
+        let schema = z.string();
+        if (field.required) {
+          schema = schema.min(1, `${field.label} is required`);
+        }
+        fieldSchema = schema.email({
+          message: "Please enter a valid email address",
+        });
         break;
+      }
 
-      case "number":
-        fieldSchema = z.number();
+      case "number": {
+        let schema = z.coerce.number();
         if ("min" in field && field.min !== undefined) {
-          fieldSchema = (fieldSchema as z.ZodNumber).min(
-            field.min,
-            `Minimum value is ${field.min}`
-          );
+          schema = schema.min(field.min, `Minimum value is ${field.min}`);
         }
         if ("max" in field && field.max !== undefined) {
-          fieldSchema = (fieldSchema as z.ZodNumber).max(
-            field.max,
-            `Maximum value is ${field.max}`
-          );
+          schema = schema.max(field.max, `Maximum value is ${field.max}`);
         }
+        fieldSchema = schema;
         break;
+      }
 
-      case "textarea":
-        fieldSchema = z.string();
+      case "textarea": {
+        let schema = z.string();
+        if (field.required) {
+          schema = schema.min(1, `${field.label} is required`);
+        }
+        fieldSchema = schema;
         break;
+      }
 
       case "select":
-      case "radio":
-        fieldSchema = z.string();
+      case "radio": {
+        let schema = z.string();
+        if (field.required) {
+          schema = schema.min(1, `${field.label} is required`);
+        }
+        fieldSchema = schema;
         break;
+      }
 
       case "checkbox":
       case "switch":
@@ -54,14 +70,13 @@ export function createFormValidationSchema(
         break;
 
       case "date":
-        fieldSchema = z.date();
+        fieldSchema = z.coerce.date();
         break;
 
       default:
         fieldSchema = z.string();
     }
 
-    // Make field optional if not required
     if (!field.required) {
       fieldSchema = fieldSchema.optional();
     }
