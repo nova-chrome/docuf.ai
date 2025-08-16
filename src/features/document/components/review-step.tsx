@@ -18,11 +18,11 @@ interface FormField {
 }
 
 export function ReviewStep({ onNext, onRestart }: ReviewStepProps) {
+  const file = useDocumentFile();
+  const pdfFormInfo = usePdfFormInfo();
   const [formFields, setFormFields] = useState<FormField[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const file = useDocumentFile();
-  const pdfFormInfo = usePdfFormInfo();
 
   useEffect(() => {
     const loadFormFields = async () => {
@@ -65,6 +65,7 @@ export function ReviewStep({ onNext, onRestart }: ReviewStepProps) {
 
     loadFormFields();
   }, [file, pdfFormInfo]);
+
   return (
     <div className="bg-white rounded-2xl shadow-lg p-8">
       <h2 className="text-2xl font-bold text-center mb-4">
@@ -95,7 +96,12 @@ export function ReviewStep({ onNext, onRestart }: ReviewStepProps) {
       )}
 
       {!isLoading && !error && formFields.length > 0 && (
-        <div className="mb-6">
+        <div
+          ref={(ref) =>
+            ref?.scrollIntoView({ behavior: "smooth", block: "center" })
+          }
+          className="mb-6"
+        >
           <h3 className="text-lg font-semibold mb-3">Form Fields JSON Data:</h3>
           <div className="bg-gray-50 rounded-lg p-4 overflow-auto max-h-96">
             <pre className="text-sm font-mono whitespace-pre-wrap">
@@ -108,49 +114,6 @@ export function ReviewStep({ onNext, onRestart }: ReviewStepProps) {
           </p>
         </div>
       )}
-
-      {!isLoading &&
-        !error &&
-        formFields.length === 0 &&
-        pdfFormInfo &&
-        pdfFormInfo.hasFormFields && (
-          <div className="mb-6">
-            <h3 className="text-lg font-semibold mb-3">
-              Basic Form Information:
-            </h3>
-            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-              <p className="text-blue-700 mb-2">
-                ✅ PDF contains {pdfFormInfo.formFieldCount} form field
-                {pdfFormInfo.formFieldCount !== 1 ? "s" : ""}
-              </p>
-              {pdfFormInfo.fieldTypes.length > 0 && (
-                <div className="bg-gray-50 rounded-lg p-3 mt-3">
-                  <p className="text-sm font-medium text-gray-700 mb-2">
-                    Field Types Detected:
-                  </p>
-                  <pre className="text-sm font-mono whitespace-pre-wrap">
-                    {JSON.stringify(pdfFormInfo.fieldTypes, null, 2)}
-                  </pre>
-                </div>
-              )}
-              <p className="text-sm text-blue-600 mt-3">
-                Basic analysis completed. Detailed field information could not
-                be loaded.
-              </p>
-            </div>
-          </div>
-        )}
-
-      {!isLoading &&
-        !error &&
-        formFields.length === 0 &&
-        (!pdfFormInfo || !pdfFormInfo.hasFormFields) && (
-          <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-6">
-            <p className="text-yellow-700">
-              No form fields detected in this PDF.
-            </p>
-          </div>
-        )}
 
       <div className="text-center">
         <button

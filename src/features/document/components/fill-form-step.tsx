@@ -87,12 +87,18 @@ export function FillFormStep({ onNext, onRestart }: FillFormStepProps) {
         </p>
       </div>
 
-      <FormRenderer
-        schema={formSchema}
-        onSubmit={handleFormSubmit}
-        submitButtonText="Generate Document"
-        className="mx-auto w-full max-w-2xl space-y-6"
-      />
+      <div
+        ref={(ref) =>
+          ref?.scrollIntoView({ behavior: "smooth", block: "center" })
+        }
+      >
+        <FormRenderer
+          schema={formSchema}
+          onSubmit={handleFormSubmit}
+          submitButtonText="Generate Document"
+          className="mx-auto w-full max-w-2xl space-y-6"
+        />
+      </div>
 
       <div className="text-center mt-6">
         <button

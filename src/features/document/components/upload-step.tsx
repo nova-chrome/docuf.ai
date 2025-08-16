@@ -30,10 +30,10 @@ interface UploadStepProps {
 
 export function UploadStep({ onNext }: UploadStepProps) {
   const fileInfoRef = useRef<HTMLDivElement>(null);
-  const { analyzePDF, clearAnalysis } = useDocumentActions();
   const pdfFormInfo = usePdfFormInfo();
   const isAnalyzing = useIsAnalyzing();
   const isPdfAnalysisValid = useIsPdfAnalysisValid();
+  const { analyzePDF, clearAnalysis } = useDocumentActions();
 
   const [
     { files, isDragging, errors },
