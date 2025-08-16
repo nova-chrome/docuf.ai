@@ -47,7 +47,7 @@ const exampleFormSchema: FormSchema = {
       label: "Biography",
       type: "textarea",
       placeholder: "Tell us about yourself...",
-      rows: 4,
+      rows: 9,
       description: "Optional biography",
     },
     {
