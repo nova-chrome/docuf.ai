@@ -1,13 +1,11 @@
 "use client";
 
+import { Button } from "~/components/ui/button";
 import { useDownloadFile } from "~/hooks/use-download-file";
 import { useFilledPdfBlob } from "../stores/document.store";
+import { StepContainer } from "./step-container";
 
-interface DownloadStepProps {
-  onStartOver: () => void;
-}
-
-export function DownloadStep({ onStartOver }: DownloadStepProps) {
+export function DownloadStep() {
   const filledPdfBlob = useFilledPdfBlob();
   const { download } = useDownloadFile();
 
@@ -29,34 +27,30 @@ export function DownloadStep({ onStartOver }: DownloadStepProps) {
   };
 
   return (
-    <div className="bg-white rounded-2xl shadow-lg p-8">
-      <h2 className="text-2xl font-bold text-center mb-4">
-        Download Your Document
-      </h2>
-      <p className="text-gray-600 text-center mb-8">
-        Your completed document is ready for download
-      </p>
-      <div className="text-center">
-        <button
-          className="bg-green-500 text-white px-6 py-2 rounded-lg hover:bg-green-600 transition-colors mr-4 disabled:bg-gray-400 disabled:cursor-not-allowed"
-          onClick={handleDownload}
-          disabled={!filledPdfBlob}
-        >
-          {filledPdfBlob ? "Download PDF" : "PDF Not Ready"}
-        </button>
-        <button
-          className="bg-gray-200 text-gray-700 px-6 py-2 rounded-lg hover:bg-gray-300 transition-colors"
-          onClick={onStartOver}
-        >
-          Start Over
-        </button>
-      </div>
-
+    <StepContainer
+      title="Download Your Document"
+      description="Your completed document is ready for download"
+      renderActions={({ onRestart }) => (
+        <div className="flex gap-2">
+          <Button
+            variant="outline"
+            disabled={!filledPdfBlob}
+            onClick={handleDownload}
+            className="flex-1"
+          >
+            Download PDF
+          </Button>
+          <Button onClick={onRestart} className="flex-1">
+            Start Over
+          </Button>
+        </div>
+      )}
+    >
       {!filledPdfBlob && (
         <p className="text-red-500 text-center mt-4 text-sm">
           Something went wrong. Please go back and try again.
         </p>
       )}
-    </div>
+    </StepContainer>
   );
 }

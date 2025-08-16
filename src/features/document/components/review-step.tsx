@@ -4,11 +4,7 @@ import { useEffect, useState } from "react";
 import { getPDFFormFieldDetails } from "~/util/pdf-utils";
 import { tryCatch } from "~/util/try-catch";
 import { useDocumentFile, usePdfFormInfo } from "../stores/document.store";
-
-interface ReviewStepProps {
-  onNext: () => void;
-  onRestart: () => void;
-}
+import { StepContainer } from "./step-container";
 
 interface FormField {
   name: string;
@@ -17,7 +13,7 @@ interface FormField {
   isRequired: boolean;
 }
 
-export function ReviewStep({ onNext, onRestart }: ReviewStepProps) {
+export function ReviewStep() {
   const file = useDocumentFile();
   const pdfFormInfo = usePdfFormInfo();
   const [formFields, setFormFields] = useState<FormField[]>([]);
@@ -67,14 +63,12 @@ export function ReviewStep({ onNext, onRestart }: ReviewStepProps) {
   }, [file, pdfFormInfo]);
 
   return (
-    <div className="bg-white rounded-2xl shadow-lg p-8">
-      <h2 className="text-2xl font-bold text-center mb-4">
-        Review Detected Form
-      </h2>
-      <p className="text-gray-600 text-center mb-8">
-        Our AI has detected the following fields in your document
-      </p>
-
+    <StepContainer
+      title="Review Detected Form"
+      description="Please review the detected form fields below."
+      disableNext={isLoading || !!error || !formFields.length}
+      disableRestart={isLoading}
+    >
       {isLoading && (
         <div className="text-center mb-6">
           <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
@@ -114,26 +108,6 @@ export function ReviewStep({ onNext, onRestart }: ReviewStepProps) {
           </p>
         </div>
       )}
-
-      <div className="text-center">
-        <button
-          className="bg-blue-500 text-white px-6 py-2 rounded-lg hover:bg-blue-600 transition-colors mr-4 disabled:opacity-50 disabled:cursor-not-allowed"
-          onClick={onNext}
-          disabled={
-            isLoading ||
-            !!error ||
-            (!formFields.length && (!pdfFormInfo || !pdfFormInfo.hasFormFields))
-          }
-        >
-          Continue to Fill Form
-        </button>
-        <button
-          className="bg-gray-200 text-gray-700 px-6 py-2 rounded-lg hover:bg-gray-300 transition-colors"
-          onClick={onRestart}
-        >
-          Start Over
-        </button>
-      </div>
-    </div>
+    </StepContainer>
   );
 }

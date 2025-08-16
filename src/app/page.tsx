@@ -1,18 +1,15 @@
 "use client";
 
+import { Card } from "~/components/ui/card";
 import { DocumentFormSteps } from "~/features/document/components/document-form-steps";
 import { DownloadStep } from "~/features/document/components/download-step";
 import { FillFormStep } from "~/features/document/components/fill-form-step";
 import { ReviewStep } from "~/features/document/components/review-step";
 import { UploadStep } from "~/features/document/components/upload-step";
-import {
-  useDocumentStepsActions,
-  useDocumentStepsCurrentStep,
-} from "~/features/document/stores/document-steps.store";
+import { useDocumentStepsCurrentStep } from "~/features/document/stores/document-steps.store";
 
 export default function Home() {
   const currentStep = useDocumentStepsCurrentStep();
-  const { nextStep, resetToFirstStep } = useDocumentStepsActions();
 
   return (
     <div className="min-h-screen flex flex-col items-center p-8 bg-gray-50">
@@ -30,19 +27,12 @@ export default function Home() {
 
       <DocumentFormSteps className="w-full max-w-6xl mb-16" />
 
-      <div className="w-full max-w-2xl">
-        {currentStep === 1 && <UploadStep onNext={nextStep} />}
-
-        {currentStep === 2 && (
-          <ReviewStep onNext={nextStep} onRestart={resetToFirstStep} />
-        )}
-
-        {currentStep === 3 && (
-          <FillFormStep onNext={nextStep} onRestart={resetToFirstStep} />
-        )}
-
-        {currentStep === 4 && <DownloadStep onStartOver={resetToFirstStep} />}
-      </div>
+      <Card className="w-full max-w-2xl">
+        {currentStep === 1 && <UploadStep />}
+        {currentStep === 2 && <ReviewStep />}
+        {currentStep === 3 && <FillFormStep />}
+        {currentStep === 4 && <DownloadStep />}
+      </Card>
     </div>
   );
 }

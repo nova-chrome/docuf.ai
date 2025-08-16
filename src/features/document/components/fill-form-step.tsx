@@ -9,25 +9,17 @@ import type {
 import { convertPDFToFormSchema, fillPdfWithFormData } from "~/util/pdf-utils";
 import { tryCatch } from "~/util/try-catch";
 import { useDocumentActions, useDocumentFile } from "../stores/document.store";
+import { StepContainer } from "./step-container";
 
-interface FillFormStepProps {
-  onNext: () => void;
-  onRestart: () => void;
-}
-
-export function FillFormStep({ onNext, onRestart }: FillFormStepProps) {
+export function FillFormStep() {
   const file = useDocumentFile();
   const { setFormData, setFilledPdfBlob } = useDocumentActions();
-  const [formSchema, setFormSchema] = useState<FormSchema | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [{ title = "", description = "", ...formSchema }, setFormSchema] =
+    useState<FormSchema>({ title: "", description: "", fields: [], id: "" });
 
   useEffect(() => {
     async function loadFormSchema() {
       if (!file) {
-        setError("No PDF file available");
-        setIsLoading(false);
         return;
       }
 
@@ -35,111 +27,48 @@ export function FillFormStep({ onNext, onRestart }: FillFormStepProps) {
         convertPDFToFormSchema(file)
       );
 
-      if (error) {
-        setError("Failed to load form fields from PDF");
-      } else {
-        setFormSchema(schema);
-      }
+      if (error) return;
 
-      setIsLoading(false);
+      setFormSchema(schema);
     }
 
     loadFormSchema();
   }, [file]);
 
   const handleFormSubmit = async (data: FormData) => {
-    if (!file) {
-      setError("No PDF file available");
-      return;
-    }
+    if (!file) return;
 
-    setIsSubmitting(true);
-    setError(null);
+    const { data: filledPdfBlob, error } = await tryCatch(
+      fillPdfWithFormData(file, data)
+    );
 
-    try {
-      // Store the form data
-      setFormData(data);
+    if (error) return;
 
-      // Fill the PDF with the form data
-      const filledPdfBlob = await fillPdfWithFormData(file, data);
-
-      // Store the filled PDF blob
-      setFilledPdfBlob(filledPdfBlob);
-
-      // Move to next step
-      onNext();
-    } catch (error) {
-      console.error("Error filling PDF:", error);
-      setError("Failed to generate filled PDF. Please try again.");
-    } finally {
-      setIsSubmitting(false);
-    }
+    setFormData(data);
+    setFilledPdfBlob(filledPdfBlob);
   };
 
-  if (isLoading) {
-    return (
-      <div className="bg-white rounded-2xl shadow-lg p-8">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500 mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading form fields...</p>
-        </div>
-      </div>
-    );
-  }
-
-  if (error || !formSchema) {
-    return (
-      <div className="bg-white rounded-2xl shadow-lg p-8">
-        <h2 className="text-2xl font-bold text-center mb-4 text-red-600">
-          Error
-        </h2>
-        <p className="text-gray-600 text-center mb-8">
-          {error || "Unable to load form schema"}
-        </p>
-        <div className="text-center">
-          <button
-            className="bg-gray-200 text-gray-700 px-6 py-2 rounded-lg hover:bg-gray-300 transition-colors"
-            onClick={onRestart}
-          >
-            Start Over
-          </button>
-        </div>
-      </div>
-    );
-  }
-
   return (
-    <div className="bg-white rounded-2xl shadow-lg p-8">
-      <div className="mb-6">
-        <h2 className="text-2xl font-bold text-center mb-2">Fill Out Form</h2>
-        <p className="text-gray-600 text-center">
-          Complete the detected fields below
-        </p>
-      </div>
-
-      <div
-        ref={(ref) =>
-          ref?.scrollIntoView({ behavior: "smooth", block: "center" })
-        }
-      >
-        <FormRenderer
-          schema={formSchema}
-          onSubmit={handleFormSubmit}
-          submitButtonText={
-            isSubmitting ? "Generating Document..." : "Generate Document"
+    <StepContainer
+      title={title || "Fill Form"}
+      description={description || "Please fill out the form below."}
+      renderActions={({ onNext }) => (
+        <div
+          ref={(ref) =>
+            ref?.scrollIntoView({ behavior: "smooth", block: "center" })
           }
-          className="mx-auto w-full max-w-2xl space-y-6"
-        />
-      </div>
-
-      <div className="text-center mt-6">
-        <button
-          className="bg-gray-200 text-gray-700 px-6 py-2 rounded-lg hover:bg-gray-300 transition-colors"
-          onClick={onRestart}
         >
-          Start Over
-        </button>
-      </div>
-    </div>
+          <FormRenderer
+            schema={formSchema}
+            onSubmit={async (data) => {
+              await handleFormSubmit(data);
+              onNext?.();
+            }}
+            submitButtonText="Generate Document"
+            className="mx-auto w-full max-w-2xl space-y-6"
+          />
+        </div>
+      )}
+    />
   );
 }
