@@ -1,5 +1,6 @@
 "use client";
 
+import { useDownloadFile } from "~/hooks/use-download-file";
 import { useFilledPdfBlob } from "../stores/document.store";
 
 interface DownloadStepProps {
@@ -8,28 +9,23 @@ interface DownloadStepProps {
 
 export function DownloadStep({ onStartOver }: DownloadStepProps) {
   const filledPdfBlob = useFilledPdfBlob();
+  const { download } = useDownloadFile();
 
-  const handleDownload = () => {
-    if (!filledPdfBlob) {
-      console.error("No filled PDF available for download");
-      return;
+  const handleDownload = async () => {
+    if (!filledPdfBlob) return;
+
+    try {
+      const filename = "completed-document.pdf";
+      await download(
+        {
+          type: "blob",
+          blob: filledPdfBlob,
+        },
+        { filename, preferFileSystemAccess: true }
+      );
+    } catch (error) {
+      console.error("Download failed:", error);
     }
-
-    // Create download link
-    const url = URL.createObjectURL(filledPdfBlob);
-    const link = document.createElement("a");
-    link.href = url;
-    link.download = `filled-document-${
-      new Date().toISOString().split("T")[0]
-    }.pdf`;
-
-    // Trigger download
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-
-    // Clean up the URL
-    URL.revokeObjectURL(url);
   };
 
   return (
