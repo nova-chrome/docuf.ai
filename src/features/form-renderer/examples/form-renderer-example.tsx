@@ -1,7 +1,8 @@
 "use client";
 
 import * as React from "react";
-import { FormRenderer, type FormData, type FormSchema } from "../index";
+import { FormRenderer } from "../components/form-renderer";
+import type { FormData, FormSchema } from "../types/form-schema.types";
 
 // Example form schema that demonstrates all field types
 const exampleFormSchema: FormSchema = {

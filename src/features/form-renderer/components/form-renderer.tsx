@@ -1,5 +1,6 @@
 "use client";
 
+import { useStore } from "@tanstack/react-form";
 import { type FormHTMLAttributes, useCallback } from "react";
 import { Button } from "~/components/ui/button";
 import { useAppForm } from "~/components/ui/tanstack-form";
@@ -35,6 +36,10 @@ export function FormRenderer({
     },
   });
 
+  const formState = useStore(form.store, (state) => state);
+  const isFormValid = formState.canSubmit && formState.isValid;
+  const isSubmitting = formState.isSubmitting;
+
   const handleSubmit = useCallback(
     (e: React.FormEvent) => {
       e.preventDefault();
@@ -66,7 +71,23 @@ export function FormRenderer({
         {/* Form fields */}
         <div className="space-y-4">
           {schema.fields.map((field) => (
-            <form.AppField key={field.id} name={field.name}>
+            <form.AppField
+              key={field.id}
+              name={field.name}
+              validators={{
+                onChange: field.required
+                  ? ({ value }) => {
+                      if (
+                        !value ||
+                        (typeof value === "string" && value.trim() === "")
+                      ) {
+                        return `${field.label} is required`;
+                      }
+                      return undefined;
+                    }
+                  : undefined,
+              }}
+            >
               {(fieldProps) => {
                 const errors = fieldProps.state.meta.errors;
                 const errorMessage =
@@ -113,8 +134,12 @@ export function FormRenderer({
         </div>
 
         {/* Submit button */}
-        <Button type="submit" className="w-full">
-          {submitButtonText}
+        <Button
+          type="submit"
+          className="w-full"
+          disabled={!isFormValid || isSubmitting}
+        >
+          {isSubmitting ? "Submitting..." : submitButtonText}
         </Button>
       </form>
     </form.AppForm>
