@@ -39,7 +39,7 @@ export function FormRenderer({
       formApi.reset();
     },
     validators: {
-      onChange: formValidationSchema,
+      onSubmit: formValidationSchema,
     },
   });
 
