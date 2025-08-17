@@ -5,11 +5,20 @@ import { Button } from "~/components/ui/button";
 import { CardContent, CardHeader, CardTitle } from "~/components/ui/card";
 import { saveFile } from "~/util/save-file";
 import { useDocumentStepsActions } from "../stores/document-steps.store";
-import { useDocumentFilledPdfBlob } from "../stores/document.store";
+import {
+  useDocumentActions,
+  useDocumentFilledPdfBlob,
+} from "../stores/document.store";
 
 export function DownloadStep() {
   const filledPdfBlob = useDocumentFilledPdfBlob();
+  const { reset } = useDocumentActions();
   const { resetToFirstStep } = useDocumentStepsActions();
+
+  const handleReset = () => {
+    reset();
+    resetToFirstStep();
+  };
 
   const handleDownload = async () => {
     if (!filledPdfBlob) return;
@@ -46,7 +55,7 @@ export function DownloadStep() {
           >
             Download PDF
           </Button>
-          <Button onClick={resetToFirstStep} className="flex-1">
+          <Button onClick={handleReset} className="flex-1">
             Start Over
           </Button>
         </div>

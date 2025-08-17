@@ -21,7 +21,7 @@ import { useDocumentActions, useDocumentFile } from "../stores/document.store";
 
 export function FillFormStep() {
   const file = useDocumentFile();
-  const { setFilledPdfBlob } = useDocumentActions();
+  const { reset, setFilledPdfBlob } = useDocumentActions();
   const { nextStep, resetToFirstStep } = useDocumentStepsActions();
   const { data, error, isLoading } = useTryCatch(
     () => convertPDFToFormSchema(file!),
@@ -40,6 +40,11 @@ export function FillFormStep() {
     if (error) return;
     setFilledPdfBlob(filledPdfBlob);
     nextStep();
+  };
+
+  const handleReset = () => {
+    reset();
+    resetToFirstStep();
   };
 
   const scrollFormToTop = (ref: HTMLDivElement | null) => {
@@ -62,7 +67,7 @@ export function FillFormStep() {
             data={data}
             error={error}
             isLoading={isLoading}
-            onError={resetToFirstStep}
+            onError={handleReset}
             onSubmit={handleFormSubmit}
           />
         </div>

@@ -8,10 +8,11 @@ import { Spinner } from "~/components/ui/spinner";
 import { getPDFFormFieldDetails } from "~/features/document/util/pdf-utils";
 import { useTryCatch } from "~/hooks/use-try-catch";
 import { useDocumentStepsActions } from "../stores/document-steps.store";
-import { useDocumentFile } from "../stores/document.store";
+import { useDocumentActions, useDocumentFile } from "../stores/document.store";
 
 export function ReviewStep() {
   const file = useDocumentFile();
+  const { reset } = useDocumentActions();
   const { nextStep, resetToFirstStep } = useDocumentStepsActions();
   const { data, isLoading, error } = useTryCatch(
     () => getPDFFormFieldDetails(file!),
@@ -20,6 +21,11 @@ export function ReviewStep() {
       immediate: !!file,
     }
   );
+
+  const handleReset = () => {
+    reset();
+    resetToFirstStep();
+  };
 
   return (
     <Fragment>
@@ -36,14 +42,14 @@ export function ReviewStep() {
           data={data}
           error={error}
           isLoading={isLoading}
-          onError={resetToFirstStep}
+          onError={handleReset}
         />
 
         <div className="flex gap-2">
           <Button
             variant="outline"
             disabled={isLoading}
-            onClick={resetToFirstStep}
+            onClick={handleReset}
             className="flex-1"
           >
             Start Over
