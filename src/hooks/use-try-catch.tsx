@@ -45,7 +45,7 @@ export function useTryCatch<T>(
       });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [asyncFunction, ...dependencies]);
+  }, [dependencies]);
 
   useEffect(() => {
     if (options.immediate) {
