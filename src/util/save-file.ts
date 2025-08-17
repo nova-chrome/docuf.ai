@@ -11,7 +11,11 @@ export function saveFile({
 
   if (data instanceof Blob) {
     blob = data;
-  } else if (data instanceof Uint8Array || data instanceof ArrayBuffer) {
+  } else if (data instanceof Uint8Array) {
+    // Create a new Uint8Array with proper ArrayBuffer to ensure type compatibility
+    const newUint8Array = new Uint8Array(data);
+    blob = new Blob([newUint8Array], { type });
+  } else if (data instanceof ArrayBuffer) {
     blob = new Blob([data], { type });
   } else if (typeof data === "string") {
     // base64 or data URL
