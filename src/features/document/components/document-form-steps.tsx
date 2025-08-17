@@ -8,13 +8,9 @@ import {
   StepperNav,
   StepperSeparator,
   StepperTitle,
-  StepperTrigger,
 } from "~/components/ui/stepper";
 import { DOCUMENT_STEPS } from "~/features/document/constants/document.constants";
-import {
-  useDocumentStepsActions,
-  useDocumentStepsCurrentStep,
-} from "~/features/document/stores/document-steps.store";
+import { useDocumentStepsCurrentStep } from "~/features/document/stores/document-steps.store";
 import { cn } from "~/lib/utils";
 
 interface DocumentFormStepsProps {
@@ -22,20 +18,12 @@ interface DocumentFormStepsProps {
 }
 
 export function DocumentFormSteps({ className }: DocumentFormStepsProps) {
-  const { goToStep } = useDocumentStepsActions();
   const currentStep = useDocumentStepsCurrentStep();
-
-  function handleStepChange(step: number) {
-    if (step >= currentStep) {
-      goToStep(step);
-    }
-  }
 
   return (
     <div className={className}>
       <Stepper
         value={currentStep}
-        onValueChange={handleStepChange}
         orientation="horizontal"
         className="w-full"
         indicators={{
@@ -53,16 +41,14 @@ export function DocumentFormSteps({ className }: DocumentFormStepsProps) {
                 key={stepItem.id}
                 step={stepItem.id}
                 completed={isCompleted}
-                disabled={isCompleted}
+                disabled
                 className="flex items-center flex-1"
               >
-                <StepperTrigger
-                  className={cn(isCompleted && "cursor-not-allowed opacity-75")}
-                >
-                  <StepperIndicator className="relative w-12 h-12">
+                <div className="flex items-center gap-3">
+                  <StepperIndicator className="relative w-12 h-12 cursor-default">
                     <Icon className="h-6 w-6" />
                   </StepperIndicator>
-                  <div className="text-center">
+                  <div className="text-center hidden md:block">
                     <StepperTitle
                       className={cn(
                         "text-sm font-medium text-muted-foreground",
@@ -75,7 +61,7 @@ export function DocumentFormSteps({ className }: DocumentFormStepsProps) {
                       {stepItem.description}
                     </p>
                   </div>
-                </StepperTrigger>
+                </div>
                 {index < DOCUMENT_STEPS.length - 1 && (
                   <StepperSeparator
                     className={cn(
