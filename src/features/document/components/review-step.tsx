@@ -5,8 +5,8 @@ import { Alert, AlertDescription, AlertTitle } from "~/components/ui/alert";
 import { Button } from "~/components/ui/button";
 import { CardContent, CardHeader, CardTitle } from "~/components/ui/card";
 import { Spinner } from "~/components/ui/spinner";
+import { getPDFFormFieldDetails } from "~/features/document/util/pdf-utils";
 import { useTryCatch } from "~/hooks/use-try-catch";
-import { getPDFFormFieldDetails } from "~/util/pdf-utils";
 import { useDocumentStepsActions } from "../stores/document-steps.store";
 import { useDocumentFile } from "../stores/document.store";
 

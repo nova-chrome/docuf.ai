@@ -5,13 +5,16 @@ import { Alert, AlertDescription, AlertTitle } from "~/components/ui/alert";
 import { Button } from "~/components/ui/button";
 import { CardContent, CardHeader, CardTitle } from "~/components/ui/card";
 import { Spinner } from "~/components/ui/spinner";
+import {
+  convertPDFToFormSchema,
+  fillPdfWithFormData,
+} from "~/features/document/util/pdf-utils";
 import { FormRenderer } from "~/features/form-renderer/components/form-renderer";
 import type {
   FormData,
   FormSchema,
 } from "~/features/form-renderer/types/form-schema.types";
 import { useTryCatch } from "~/hooks/use-try-catch";
-import { convertPDFToFormSchema, fillPdfWithFormData } from "~/util/pdf-utils";
 import { tryCatch } from "~/util/try-catch";
 import { useDocumentStepsActions } from "../stores/document-steps.store";
 import { useDocumentActions, useDocumentFile } from "../stores/document.store";

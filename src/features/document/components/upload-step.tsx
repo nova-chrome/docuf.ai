@@ -4,7 +4,7 @@ import { Fragment, useCallback, useRef, useState } from "react";
 import { Button } from "~/components/ui/button";
 import { CardContent, CardHeader, CardTitle } from "~/components/ui/card";
 import { Dropzone } from "~/components/ui/dropzone";
-import { checkPDFFormFields } from "~/util/pdf-utils";
+import { checkPDFFormFields } from "~/features/document/util/pdf-utils";
 import { tryCatch } from "~/util/try-catch";
 import { useDocumentStepsActions } from "../stores/document-steps.store";
 import { useDocumentActions, useDocumentFile } from "../stores/document.store";

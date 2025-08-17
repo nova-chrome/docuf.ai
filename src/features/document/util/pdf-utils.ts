@@ -11,7 +11,7 @@ import type {
   FormData,
   FormSchema,
 } from "~/features/form-renderer/types/form-schema.types";
-import { tryCatch } from "./try-catch";
+import { tryCatch } from "../../../util/try-catch";
 
 export interface PDFFormInfo {
   hasFormFields: boolean;
