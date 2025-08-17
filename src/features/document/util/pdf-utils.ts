@@ -206,8 +206,8 @@ export async function convertPDFToFormSchema(file: File): Promise<FormSchema> {
 
   return {
     id: "pdf_form",
-    title: "Fill PDF Form",
-    description: "Complete the form fields extracted from the PDF document",
+    title: "",
+    description: "",
     fields: formFields,
   };
 }

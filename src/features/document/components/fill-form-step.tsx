@@ -54,12 +54,8 @@ export function FillFormStep() {
   return (
     <Fragment>
       <CardHeader className="text-center">
-        <CardTitle className="text-2xl font-bold">
-          {data?.title || "Fill Form"}
-        </CardTitle>
-        <p className="text-muted-foreground">
-          {data?.description || "Please fill out the form below."}
-        </p>
+        <CardTitle className="text-2xl font-bold">Fill Form</CardTitle>
+        <p className="text-muted-foreground">Please fill out the form below.</p>
       </CardHeader>
       <CardContent>
         <div ref={scrollFormToTop}>
