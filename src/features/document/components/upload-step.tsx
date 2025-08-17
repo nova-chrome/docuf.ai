@@ -6,11 +6,10 @@ import { Dropzone } from "~/components/ui/dropzone";
 import { checkPDFFormFields } from "~/features/document/util/pdf-utils";
 import { tryCatch } from "~/util/try-catch";
 import { useDocumentStepsActions } from "../stores/document-steps.store";
-import { useDocumentActions, useDocumentFile } from "../stores/document.store";
+import { useDocumentActions } from "../stores/document.store";
 import { StepWrapper } from "./step-wrapper";
 
 export function UploadStep() {
-  const uploadedFile = useDocumentFile();
   const { setFile } = useDocumentActions();
   const { nextStep } = useDocumentStepsActions();
   const fileInfoRef = useRef<HTMLDivElement>(null);
@@ -69,9 +68,7 @@ export function UploadStep() {
           <div className="text-center space-y-2">
             <p className="text-foreground">Drag and drop your PDF here</p>
             <p className="text-muted-foreground">or</p>
-            <Button onClick={open}>
-              {uploadedFile ? "Replace File" : "Browse Files"}
-            </Button>
+            <Button onClick={open}>Browse Files</Button>
           </div>
         )}
       </Dropzone>

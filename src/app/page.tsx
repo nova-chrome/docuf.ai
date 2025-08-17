@@ -19,10 +19,6 @@ export default function Home() {
           <span className="text-blue-500">docuf</span>
           <span className="text-gray-900">.ai</span>
         </h1>
-        <p className="text-xl text-gray-600 leading-relaxed">
-          Transform any PDF into a smart form. AI detects fields, you fill them
-          out, and get your completed document instantly.
-        </p>
       </div>
 
       <DocumentFormSteps className="w-full max-w-6xl mb-16" />
