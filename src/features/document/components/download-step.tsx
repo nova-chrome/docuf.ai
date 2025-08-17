@@ -47,16 +47,15 @@ export function DownloadStep() {
           </p>
         )}
         <div className="flex gap-2">
+          <Button variant="outline" onClick={handleReset} className="flex-1">
+            Start Over
+          </Button>
           <Button
-            variant="outline"
             disabled={!filledPdfBlob}
             onClick={handleDownload}
             className="flex-1"
           >
             Download PDF
-          </Button>
-          <Button onClick={handleReset} className="flex-1">
-            Start Over
           </Button>
         </div>
       </CardContent>
