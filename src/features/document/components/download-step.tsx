@@ -1,36 +1,42 @@
 "use client";
 
+import { Fragment } from "react";
 import { Button } from "~/components/ui/button";
-import { useDownloadFile } from "~/hooks/use-download-file";
-import { useFilledPdfBlob } from "../stores/document.store";
-import { StepContainer } from "./step-container";
+import { CardContent, CardHeader, CardTitle } from "~/components/ui/card";
+import { saveFile } from "~/util/save-file";
+import { useDocumentStepsActions } from "../stores/document-steps.store";
+import { useDocumentFilledPdfBlob } from "../stores/document.store";
 
 export function DownloadStep() {
-  const filledPdfBlob = useFilledPdfBlob();
-  const { download } = useDownloadFile();
+  const filledPdfBlob = useDocumentFilledPdfBlob();
+  const { resetToFirstStep } = useDocumentStepsActions();
 
   const handleDownload = async () => {
     if (!filledPdfBlob) return;
-
-    try {
-      const filename = "completed-document.pdf";
-      await download(
-        {
-          type: "blob",
-          blob: filledPdfBlob,
-        },
-        { filename, preferFileSystemAccess: true }
-      );
-    } catch (error) {
-      console.error("Download failed:", error);
-    }
+    saveFile({
+      data: filledPdfBlob,
+      filename: "completed-document.pdf",
+      type: "application/pdf",
+    });
   };
 
   return (
-    <StepContainer
-      title="Download Your Document"
-      description="Your completed document is ready for download"
-      renderActions={({ onRestart }) => (
+    <Fragment>
+      <CardHeader className="text-center">
+        <CardTitle className="text-2xl font-bold">
+          Download Your Document
+        </CardTitle>
+        <p className="text-muted-foreground">
+          Your completed document is ready for download
+        </p>
+      </CardHeader>
+
+      <CardContent>
+        {!filledPdfBlob && (
+          <p className="text-red-500 text-center mt-4 text-sm">
+            Something went wrong. Please go back and try again.
+          </p>
+        )}
         <div className="flex gap-2">
           <Button
             variant="outline"
@@ -40,17 +46,11 @@ export function DownloadStep() {
           >
             Download PDF
           </Button>
-          <Button onClick={onRestart} className="flex-1">
+          <Button onClick={resetToFirstStep} className="flex-1">
             Start Over
           </Button>
         </div>
-      )}
-    >
-      {!filledPdfBlob && (
-        <p className="text-red-500 text-center mt-4 text-sm">
-          Something went wrong. Please go back and try again.
-        </p>
-      )}
-    </StepContainer>
+      </CardContent>
+    </Fragment>
   );
 }

@@ -1,113 +1,146 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { Fragment } from "react";
+import { Alert, AlertDescription, AlertTitle } from "~/components/ui/alert";
+import { Button } from "~/components/ui/button";
+import { CardContent, CardHeader, CardTitle } from "~/components/ui/card";
+import { Spinner } from "~/components/ui/spinner";
+import { useTryCatch } from "~/hooks/use-try-catch";
 import { getPDFFormFieldDetails } from "~/util/pdf-utils";
-import { tryCatch } from "~/util/try-catch";
-import { useDocumentFile, usePdfFormInfo } from "../stores/document.store";
-import { StepContainer } from "./step-container";
-
-interface FormField {
-  name: string;
-  type: string;
-  isReadOnly: boolean;
-  isRequired: boolean;
-}
+import { useDocumentStepsActions } from "../stores/document-steps.store";
+import { useDocumentFile } from "../stores/document.store";
 
 export function ReviewStep() {
   const file = useDocumentFile();
-  const pdfFormInfo = usePdfFormInfo();
-  const [formFields, setFormFields] = useState<FormField[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    const loadFormFields = async () => {
-      // First check if we have basic PDF form info
-      if (!pdfFormInfo || pdfFormInfo.error) {
-        setError("PDF analysis failed or not available");
-        setIsLoading(false);
-        return;
-      }
-
-      if (!pdfFormInfo.hasFormFields) {
-        setError("No form fields detected in PDF");
-        setIsLoading(false);
-        return;
-      }
-
-      // If we have basic info but no file, there's an issue
-      if (!file) {
-        setError("PDF file not available for detailed analysis");
-        setIsLoading(false);
-        return;
-      }
-
-      setIsLoading(true);
-      setError(null);
-
-      // Get detailed form field information
-      const result = await tryCatch(getPDFFormFieldDetails(file));
-
-      if (result.error) {
-        console.error("Error getting PDF form field details:", result.error);
-        setError("Failed to load detailed form field information");
-        setFormFields([]);
-      } else {
-        setFormFields(result.data as FormField[]);
-      }
-
-      setIsLoading(false);
-    };
-
-    loadFormFields();
-  }, [file, pdfFormInfo]);
+  const { nextStep, resetToFirstStep } = useDocumentStepsActions();
+  const { data, isLoading, error } = useTryCatch(
+    () => getPDFFormFieldDetails(file!),
+    [file],
+    {
+      immediate: !!file,
+    }
+  );
 
   return (
-    <StepContainer
-      title="Review Detected Form"
-      description="Please review the detected form fields below."
-      disableNext={isLoading || !!error || !formFields.length}
-      disableRestart={isLoading}
-    >
-      {isLoading && (
-        <div className="text-center mb-6">
-          <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
-          <p className="text-gray-600 mt-2">
-            Loading detailed form field information...
-          </p>
-        </div>
-      )}
+    <Fragment>
+      <CardHeader className="text-center">
+        <CardTitle className="text-2xl font-bold">
+          Review Detected Form
+        </CardTitle>
+        <p className="text-muted-foreground">
+          Please review the detected form fields below
+        </p>
+      </CardHeader>
+      <CardContent>
+        <FillFormStepFeedback
+          data={data}
+          error={error}
+          isLoading={isLoading}
+          onError={resetToFirstStep}
+        />
 
-      {error && (
-        <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
-          <p className="text-red-600 font-medium">Error</p>
-          <p className="text-red-600">{error}</p>
-          <p className="text-sm text-red-500 mt-2">
-            Please try uploading your PDF again or contact support if the
-            problem persists.
-          </p>
+        <div className="flex gap-2">
+          <Button
+            variant="outline"
+            disabled={isLoading}
+            onClick={resetToFirstStep}
+            className="flex-1"
+          >
+            Start Over
+          </Button>
+          <Button
+            disabled={isLoading && !!error && isLoading}
+            onClick={nextStep}
+            className="flex-1"
+          >
+            Continue
+          </Button>
         </div>
-      )}
-
-      {!isLoading && !error && formFields.length > 0 && (
-        <div
-          ref={(ref) =>
-            ref?.scrollIntoView({ behavior: "smooth", block: "center" })
-          }
-          className="mb-6"
-        >
-          <h3 className="text-lg font-semibold mb-3">Form Fields JSON Data:</h3>
-          <div className="bg-gray-50 rounded-lg p-4 overflow-auto max-h-96">
-            <pre className="text-sm font-mono whitespace-pre-wrap">
-              {JSON.stringify(formFields, null, 2)}
-            </pre>
-          </div>
-          <p className="text-sm text-gray-600 mt-2">
-            Found {formFields.length} form field
-            {formFields.length !== 1 ? "s" : ""}
-          </p>
-        </div>
-      )}
-    </StepContainer>
+      </CardContent>
+    </Fragment>
   );
+}
+
+interface FillFormStepFeedbackProps {
+  data?:
+    | {
+        name: string;
+        type: string;
+        isReadOnly: boolean;
+        isRequired: boolean;
+      }[]
+    | null;
+  error?: string | null;
+  isLoading?: boolean;
+  onError?: () => void;
+}
+
+function FillFormStepFeedback({
+  data,
+  error,
+  isLoading,
+  onError,
+}: FillFormStepFeedbackProps) {
+  if (error) {
+    return (
+      <Alert variant="destructive" className="mb-6">
+        <AlertTitle>Something went wrong</AlertTitle>
+        <AlertDescription>
+          <p className="mb-2">{error}</p>
+          <Button variant="destructive" className="w-full" onClick={onError}>
+            Please try uploading your PDF again.
+          </Button>
+        </AlertDescription>
+      </Alert>
+    );
+  }
+
+  if (isLoading) {
+    return (
+      <div className="flex flex-col items-center justify-center py-12 px-4">
+        <div className="flex flex-col items-center space-y-4">
+          <Spinner size="lg" />
+          <div className="text-center space-y-2">
+            <p className="text-lg font-medium text-foreground">
+              Processing your document...
+            </p>
+            <p className="text-sm text-muted-foreground max-w-md">
+              We&apos;re analyzing your PDF and extracting form fields. This may
+              take a few moments.
+            </p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (data) {
+    return (
+      <>
+        {(data.length ?? 0) > 0 && (
+          <div
+            ref={(ref) =>
+              ref?.scrollIntoView({ behavior: "smooth", block: "center" })
+            }
+            className="mb-6"
+          >
+            <h3 className="text-lg font-semibold mb-3">
+              Form Fields JSON Data:
+            </h3>
+            <div className="bg-gray-50 rounded-lg p-4 overflow-auto max-h-96">
+              <pre className="text-sm font-mono whitespace-pre-wrap">
+                {JSON.stringify(data, null, 2)}
+              </pre>
+            </div>
+            <p className="text-sm text-gray-600 mt-2">
+              Found {data?.length} form field
+              {data?.length !== 1 ? "s" : ""}
+            </p>
+          </div>
+        )}
+      </>
+    );
+  }
+
+  return null;
 }
