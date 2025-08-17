@@ -44,51 +44,22 @@ function getFieldType(field: unknown): string {
  * @returns Promise with form information
  */
 export async function checkPDFFormFields(file: File) {
-  const analyzePDF = async () => {
-    // Convert file to array buffer
-    const arrayBuffer = await file.arrayBuffer();
+  // Convert file to array buffer
+  const arrayBuffer = await file.arrayBuffer();
 
-    // Load the PDF document
-    const pdfDoc = await PDFDocument.load(arrayBuffer);
+  // Load the PDF document
+  const pdfDoc = await PDFDocument.load(arrayBuffer);
 
-    // Get the form from the PDF
-    const form = pdfDoc.getForm();
+  // Get the form from the PDF
+  const form = pdfDoc.getForm();
 
-    // Get all form fields
-    const fields = form.getFields();
+  // Get all form fields
+  const fields = form.getFields();
 
-    // Extract field types
-    const fieldTypes = fields.map((field) => {
-      // Use instanceof checks for reliable type detection across environments
-      return getFieldType(field);
-    });
-
-    // Remove duplicates and sort
-    const uniqueFieldTypes = [...new Set(fieldTypes)].sort();
-
-    return {
-      hasFormFields: fields.length > 0,
-      formFieldCount: fields.length,
-      fieldTypes: uniqueFieldTypes,
-    };
+  return {
+    hasFormFields: fields.length > 0,
+    formFieldCount: fields.length,
   };
-
-  const result = await tryCatch(analyzePDF());
-
-  if (result.error) {
-    console.error("Error analyzing PDF form fields:", result.error);
-    return {
-      hasFormFields: false,
-      formFieldCount: 0,
-      fieldTypes: [],
-      error:
-        result.error instanceof Error
-          ? result.error.message
-          : "Unknown error occurred",
-    };
-  }
-
-  return result.data;
 }
 
 /**
