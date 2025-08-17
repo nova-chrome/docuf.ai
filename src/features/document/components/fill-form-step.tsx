@@ -1,5 +1,6 @@
 "use client";
 
+import { Button } from "~/components/ui/button";
 import {
   convertPDFToFormSchema,
   fillPdfWithFormData,
@@ -60,6 +61,13 @@ export function FillFormStep() {
             submitButtonText="Generate Document"
             className="mx-auto w-full max-w-2xl space-y-6"
           />
+          <Button
+            onClick={handleReset}
+            variant="outline"
+            className="mt-4 w-full"
+          >
+            Start Over
+          </Button>
         </div>
       )}
     </StepWrapper>

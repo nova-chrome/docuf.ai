@@ -19,10 +19,19 @@ export function UploadStep() {
   const handleFilesAccepted = useCallback(
     async ([file]: File[]) => {
       if (file) {
-        const { error } = await tryCatch(checkPDFFormFields(file));
+        const { data, error } = await tryCatch(checkPDFFormFields(file));
 
         if (error) {
           setErrors([error.message]);
+          fileInfoRef.current?.scrollIntoView({
+            behavior: "smooth",
+            block: "start",
+          });
+          return;
+        }
+
+        if (!data.hasFormFields) {
+          setErrors(["The uploaded PDF does not contain any form fields"]);
           fileInfoRef.current?.scrollIntoView({
             behavior: "smooth",
             block: "start",
