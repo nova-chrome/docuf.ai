@@ -9,7 +9,7 @@ import { Button } from "./button";
 
 export interface DropzoneProps {
   onFilesAccepted?: (files: File[]) => void;
-  onFilesRejected?: (fileRejections: FileRejection[]) => void;
+  onFilesRejected?: (fileRejections: string[]) => void;
   accept?: Accept;
   maxFiles?: number;
   maxSize?: number;
@@ -44,7 +44,7 @@ export function Dropzone({
         onFilesAccepted?.(acceptedFiles);
       }
       if (fileRejections.length > 0) {
-        onFilesRejected?.(fileRejections);
+        onFilesRejected?.(formatFileRejectionErrors(fileRejections));
       }
     },
     [onFilesAccepted, onFilesRejected]
