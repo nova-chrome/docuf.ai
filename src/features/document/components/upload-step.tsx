@@ -1,27 +1,21 @@
 "use client";
 
-import {
-  AlertCircle,
-  CheckCircle,
-  FileText,
-  UploadIcon,
-  X,
-} from "lucide-react";
-import { useRef } from "react";
+import { AlertCircle, CheckCircle, FileText, X } from "lucide-react";
+import { useCallback, useRef, useState } from "react";
+import { type FileRejection } from "react-dropzone";
 import { Alert, AlertDescription } from "~/components/ui/alert";
 import { Button } from "~/components/ui/button";
+import {
+  Dropzone,
+  formatBytes,
+  formatFileRejectionErrors,
+} from "~/components/ui/dropzone";
 import {
   useDocumentActions,
   useIsAnalyzing,
   useIsPdfAnalysisValid,
   usePdfFormInfo,
 } from "~/features/document/stores/document.store";
-import {
-  formatBytes,
-  useFileUpload,
-  type FileWithPreview,
-} from "~/hooks/use-file-upload";
-import { cn } from "~/lib/utils";
 import { StepContainer } from "./step-container";
 
 export function UploadStep() {
@@ -31,25 +25,23 @@ export function UploadStep() {
   const isPdfAnalysisValid = useIsPdfAnalysisValid();
   const { analyzePDF, clearAnalysis } = useDocumentActions();
 
-  const [
-    { files, isDragging, errors },
-    {
-      removeFile,
-      clearErrors,
-      handleDragEnter,
-      handleDragLeave,
-      handleDragOver,
-      handleDrop,
-      openFileDialog,
-      getInputProps,
-    },
-  ] = useFileUpload({
-    maxFiles: 1,
-    maxSize: 10 * 1024 * 1024, // 10MB
-    accept: ".pdf,application/pdf",
-    multiple: false,
-    onFilesChange: (files: FileWithPreview[]) => {
-      if (files.length > 0) {
+  const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
+  const [errors, setErrors] = useState<string[]>([]);
+
+  const handleFilesAccepted = useCallback(
+    (files: File[]) => {
+      setErrors([]); // Clear any existing errors
+
+      // In single file mode, replace the existing file
+      const file = files[0];
+
+      setUploadedFiles([file]);
+
+      // Analyze PDF immediately when files are added
+      if (file) {
+        analyzePDF(file);
+
+        // Scroll to file info after a short delay
         setTimeout(() => {
           fileInfoRef.current?.scrollIntoView({
             behavior: "smooth",
@@ -58,16 +50,23 @@ export function UploadStep() {
         }, 100);
       }
     },
-    onFilesAdded: (addedFiles: FileWithPreview[]) => {
-      // Analyze PDF immediately when files are added
-      if (addedFiles.length > 0) {
-        const fileWithPreview = addedFiles[0];
-        if (fileWithPreview.file instanceof File) {
-          analyzePDF(fileWithPreview.file);
-        }
-      }
-    },
-  });
+    [analyzePDF]
+  );
+
+  const handleFilesRejected = useCallback((fileRejections: FileRejection[]) => {
+    const rejectionErrors = formatFileRejectionErrors(fileRejections);
+    setErrors(rejectionErrors);
+  }, []);
+
+  const removeFile = useCallback(() => {
+    setUploadedFiles([]);
+    clearAnalysis();
+    setErrors([]);
+  }, [clearAnalysis]);
+
+  const clearErrors = useCallback(() => {
+    setErrors([]);
+  }, []);
 
   return (
     <StepContainer
@@ -75,7 +74,7 @@ export function UploadStep() {
       description="Upload your PDF document to get started"
       renderActions={({ onNext }) => (
         <UploadActions
-          files={files}
+          files={uploadedFiles}
           fileInfoRef={fileInfoRef}
           pdfFormInfo={pdfFormInfo}
           isAnalyzing={isAnalyzing}
@@ -89,40 +88,39 @@ export function UploadStep() {
       )}
     >
       {/* Upload Area */}
-      <div
-        className={cn(
-          "border-2 border-dashed rounded-xl p-12 text-center transition-colors border-border hover:border-primary/50",
-          isDragging && "border-primary bg-primary/5"
-        )}
-        onDragEnter={handleDragEnter}
-        onDragLeave={handleDragLeave}
-        onDragOver={handleDragOver}
-        onDrop={handleDrop}
+      <Dropzone
+        onFilesAccepted={handleFilesAccepted}
+        onFilesRejected={handleFilesRejected}
+        accept={{ "application/pdf": [".pdf"] }}
+        maxFiles={1}
+        maxSize={10 * 1024 * 1024} // 10MB
+        multiple={false}
+        showErrorMessages={true}
+        errorMessages={errors}
+        onClearErrors={clearErrors}
       >
-        <div className="mb-4">
-          <UploadIcon className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
-        </div>
-        <p className="text-foreground mb-2">Drag and drop your PDF here</p>
-        <p className="text-muted-foreground mb-6">or</p>
-        <Button onClick={openFileDialog}>
-          {files.length > 0 ? "Replace File" : "Browse Files"}
-        </Button>
-      </div>
-
-      {/* Hidden File Input */}
-      <input {...getInputProps()} className="hidden" />
+        {({ open }) => (
+          <div className="text-center">
+            <p className="text-foreground mb-2">Drag and drop your PDF here</p>
+            <p className="text-muted-foreground mb-6">or</p>
+            <Button onClick={open}>
+              {uploadedFiles.length > 0 ? "Replace File" : "Browse Files"}
+            </Button>
+          </div>
+        )}
+      </Dropzone>
     </StepContainer>
   );
 }
 
 interface UploadActionsProps {
-  files: FileWithPreview[];
+  files: File[];
   fileInfoRef: React.RefObject<HTMLDivElement | null>;
   pdfFormInfo: ReturnType<typeof usePdfFormInfo>;
   isAnalyzing: boolean;
   isPdfAnalysisValid: boolean;
   errors: string[];
-  removeFile: (id: string) => void;
+  removeFile: () => void;
   clearAnalysis: () => void;
   clearErrors: () => void;
   onNext?: () => void;
@@ -145,19 +143,19 @@ function UploadActions({
       {/* File Info Section */}
       {files.length > 0 && (
         <div ref={fileInfoRef} className="mt-6 space-y-4">
-          {files.map((fileWithPreview: FileWithPreview) => (
+          {files.map((uploadedFile) => (
             <div
-              key={fileWithPreview.id}
+              key={uploadedFile.name}
               className="flex items-center justify-between p-4 bg-secondary rounded-lg"
             >
               <div className="flex items-center space-x-3">
                 <FileText className="w-8 h-8 text-destructive" />
                 <div className="text-left">
                   <p className="font-medium text-foreground">
-                    {fileWithPreview.file.name}
+                    {uploadedFile.name}
                   </p>
                   <p className="text-sm text-muted-foreground">
-                    {formatBytes(fileWithPreview.file.size)}
+                    {formatBytes(uploadedFile.size)}
                   </p>
                 </div>
               </div>
@@ -172,7 +170,7 @@ function UploadActions({
                   variant="ghost"
                   size="icon"
                   onClick={() => {
-                    removeFile(fileWithPreview.id);
+                    removeFile();
                     clearAnalysis();
                   }}
                   className="text-muted-foreground hover:text-destructive"
