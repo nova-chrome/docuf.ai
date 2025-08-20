@@ -1,15 +1,15 @@
 "use client";
 
+import { useStepper } from "~/components/ui/stepper";
 import { getPDFFormFieldDetails } from "~/features/document/util/pdf-utils";
 import { useTryCatch } from "~/hooks/use-try-catch";
-import { useDocumentStepsActions } from "../stores/document-steps.store";
 import { useDocumentActions, useDocumentFile } from "../stores/document.store";
 import { StepWrapper } from "./step-wrapper";
 
 export function ReviewStep() {
   const file = useDocumentFile();
   const { reset } = useDocumentActions();
-  const { nextStep, resetToFirstStep } = useDocumentStepsActions();
+  const { setActiveStep } = useStepper();
   const { data, isLoading, error } = useTryCatch(
     () => getPDFFormFieldDetails(file!),
     [file],
@@ -20,7 +20,7 @@ export function ReviewStep() {
 
   const handleReset = () => {
     reset();
-    resetToFirstStep();
+    setActiveStep(1);
   };
 
   const scrollDivRefToTop = (ref: HTMLDivElement | null) => {
@@ -42,7 +42,7 @@ export function ReviewStep() {
         },
         primary: {
           label: "Continue",
-          onClick: nextStep,
+          onClick: () => setActiveStep(3),
           disabled: !!error,
         },
       }}

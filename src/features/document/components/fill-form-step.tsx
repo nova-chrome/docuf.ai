@@ -1,6 +1,7 @@
 "use client";
 
 import { Button } from "~/components/ui/button";
+import { useStepper } from "~/components/ui/stepper";
 import {
   convertPDFToFormSchema,
   fillPdfWithFormData,
@@ -9,14 +10,13 @@ import { FormRenderer } from "~/features/form-renderer/components/form-renderer"
 import type { FormData } from "~/features/form-renderer/types/form-schema.types";
 import { useTryCatch } from "~/hooks/use-try-catch";
 import { tryCatch } from "~/util/try-catch";
-import { useDocumentStepsActions } from "../stores/document-steps.store";
 import { useDocumentActions, useDocumentFile } from "../stores/document.store";
 import { StepWrapper } from "./step-wrapper";
 
 export function FillFormStep() {
   const file = useDocumentFile();
   const { reset, setFilledPdfBlob } = useDocumentActions();
-  const { nextStep, resetToFirstStep } = useDocumentStepsActions();
+  const { setActiveStep } = useStepper();
   const { data, error, isLoading } = useTryCatch(
     () => convertPDFToFormSchema(file!),
     [file],
@@ -33,12 +33,12 @@ export function FillFormStep() {
 
     if (error) return;
     setFilledPdfBlob(filledPdfBlob);
-    nextStep();
+    setActiveStep(4);
   };
 
   const handleReset = () => {
     reset();
-    resetToFirstStep();
+    setActiveStep(1);
   };
 
   const scrollFormRefToTop = (ref: HTMLDivElement | null) => {

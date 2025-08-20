@@ -3,17 +3,17 @@
 import { useCallback, useRef, useState } from "react";
 import { Button } from "~/components/ui/button";
 import { Dropzone } from "~/components/ui/dropzone";
+import { useStepper } from "~/components/ui/stepper";
 import { checkPDFFormFields } from "~/features/document/util/pdf-utils";
 import { tryCatch } from "~/util/try-catch";
-import { useDocumentStepsActions } from "../stores/document-steps.store";
 import { useDocumentActions } from "../stores/document.store";
 import { StepWrapper } from "./step-wrapper";
 
 export function UploadStep() {
   const { setFile } = useDocumentActions();
-  const { nextStep } = useDocumentStepsActions();
   const fileInfoRef = useRef<HTMLDivElement>(null);
   const [errors, setErrors] = useState<string[]>([]);
+  const { setActiveStep } = useStepper();
 
   const handleFilesAccepted = useCallback(
     async ([file]: File[]) => {
@@ -39,10 +39,10 @@ export function UploadStep() {
         }
 
         setFile(file);
-        nextStep();
+        setActiveStep(2);
       }
     },
-    [nextStep, setFile]
+    [setFile, setActiveStep]
   );
 
   const handleFilesRejected = (fileRejections: string[]) => {

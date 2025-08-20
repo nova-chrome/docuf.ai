@@ -352,7 +352,10 @@ function StepperIndicator({
 }
 
 function StepperSeparator({ className }: React.ComponentProps<"div">) {
-  const { state } = useStepItem();
+  const { state, step } = useStepItem();
+  const { activeStep } = useStepper();
+
+  const shouldFill = state === "completed" || step < activeStep;
 
   return (
     <div
@@ -360,6 +363,7 @@ function StepperSeparator({ className }: React.ComponentProps<"div">) {
       data-state={state}
       className={cn(
         "m-0.5 rounded-full bg-muted group-data-[orientation=vertical]/stepper-nav:h-12 group-data-[orientation=vertical]/stepper-nav:w-0.5 group-data-[orientation=horizontal]/stepper-nav:h-0.5 group-data-[orientation=horizontal]/stepper-nav:flex-1",
+        shouldFill && "bg-primary",
         className
       )}
     />

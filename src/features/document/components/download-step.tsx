@@ -1,7 +1,7 @@
 "use client";
 
+import { useStepper } from "~/components/ui/stepper";
 import { saveFile } from "~/util/save-file";
-import { useDocumentStepsActions } from "../stores/document-steps.store";
 import {
   useDocumentActions,
   useDocumentFilledPdfBlob,
@@ -11,11 +11,11 @@ import { StepWrapper } from "./step-wrapper";
 export function DownloadStep() {
   const filledPdfBlob = useDocumentFilledPdfBlob();
   const { reset } = useDocumentActions();
-  const { resetToFirstStep } = useDocumentStepsActions();
+  const { setActiveStep } = useStepper();
 
   const handleReset = () => {
     reset();
-    resetToFirstStep();
+    setActiveStep(1);
   };
 
   const handleDownload = async () => {
