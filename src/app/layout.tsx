@@ -1,6 +1,7 @@
 import { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { PropsWithChildren } from "react";
+import { cn } from "~/lib/utils";
 import "./globals.css";
 import { Providers } from "./providers";
 
@@ -23,7 +24,11 @@ export default function RootLayout({ children }: Readonly<PropsWithChildren>) {
   return (
     <html lang="en" suppressHydrationWarning>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={cn(
+          geistSans.variable,
+          geistMono.variable,
+          "antialiased bg-background"
+        )}
         suppressHydrationWarning
       >
         <Providers>{children}</Providers>
