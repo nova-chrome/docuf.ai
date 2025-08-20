@@ -50,10 +50,10 @@ export function StepWrapper({
   children,
   isLoading = false,
   error,
-  loadingTitle = "Processing your document...",
-  loadingDescription = "We're analyzing your PDF and extracting form fields. This may take a few moments.",
+  loadingTitle,
+  loadingDescription,
   onRetry,
-  retryButtonText = "Please try uploading your PDF again.",
+  retryButtonText,
   actions,
   className,
 }: PropsWithChildren<StepWrapperProps>) {
