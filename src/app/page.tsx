@@ -52,7 +52,7 @@ export default function Home() {
                   <StepperIndicator className="relative w-12 h-12 cursor-default">
                     <step.icon className="size-6" />
                   </StepperIndicator>
-                  <div className="flex flex-col items-start gap-0.5">
+                  <div className="hidden md:flex md:flex-col md:items-start md:gap-0.5">
                     <StepperTitle>{step.title}</StepperTitle>
                     <StepperDescription>{step.description}</StepperDescription>
                   </div>
