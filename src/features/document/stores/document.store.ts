@@ -11,9 +11,7 @@ export interface DocumentStore {
 }
 const useDocumentStore = create<DocumentStore>((set) => ({
   file: null,
-  formData: null,
   filledPdfBlob: null,
-  isAnalyzing: false,
   actions: {
     reset: () => {
       set({
