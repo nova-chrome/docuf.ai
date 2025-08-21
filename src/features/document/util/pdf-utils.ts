@@ -213,6 +213,72 @@ export async function convertPDFToFormSchema(file: File): Promise<FormSchema> {
 }
 
 /**
+ * Fills a PDF form with the provided form data and returns the URL
+ * @param file - The original PDF file
+ * @param formData - The form data to fill in
+ * @returns Promise with the filled PDF as a Blob URL
+ */
+export async function fillPdfWithFormDataRealtime(
+  file: File,
+  formData: FormData
+): Promise<string> {
+  try {
+    // Convert file to array buffer
+    const arrayBuffer = await file.arrayBuffer();
+
+    // Load the PDF document
+    const pdfDoc = await PDFDocument.load(arrayBuffer);
+
+    // Get the form from the PDF
+    const form = pdfDoc.getForm();
+
+    // Get all form fields
+    const fields = form.getFields();
+
+    // Fill fields based on the form data
+    fields.forEach((field) => {
+      const fieldName = field.getName();
+      const value = formData[fieldName];
+
+      if (value === undefined || value === null) {
+        return; // Skip if no value provided
+      }
+
+      try {
+        if (field instanceof PDFTextField) {
+          field.setText(String(value));
+        } else if (field instanceof PDFCheckBox) {
+          if (Boolean(value)) {
+            field.check();
+          } else {
+            field.uncheck();
+          }
+        } else if (field instanceof PDFDropdown) {
+          field.select(String(value));
+        } else if (field instanceof PDFRadioGroup) {
+          field.select(String(value));
+        }
+      } catch (error) {
+        console.warn(`Failed to fill field ${fieldName}:`, error);
+      }
+    });
+
+    // Save the filled PDF
+    const filledPdfBytes = await pdfDoc.save();
+
+    // Convert to Uint8Array to ensure compatibility with Blob constructor
+    const uint8Array = new Uint8Array(filledPdfBytes);
+
+    // Create blob and return URL
+    const blob = new Blob([uint8Array], { type: "application/pdf" });
+    return URL.createObjectURL(blob);
+  } catch (error) {
+    console.error("Error filling PDF with form data in realtime:", error);
+    throw error;
+  }
+}
+
+/**
  * Fills a PDF form with the provided form data
  * @param file - The original PDF file
  * @param formData - The form data to fill in

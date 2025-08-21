@@ -1,7 +1,7 @@
 "use client";
 
 import { useStore } from "@tanstack/react-form";
-import { type FormHTMLAttributes, useCallback } from "react";
+import { type FormHTMLAttributes, useCallback, useEffect } from "react";
 import { Button } from "~/components/ui/button";
 import { useAppForm } from "~/components/ui/tanstack-form";
 import type { FormData, FormSchema } from "../types/form-schema.types";
@@ -18,6 +18,7 @@ interface FormRendererProps
   defaultValues?: FormData;
   submitButtonText?: string;
   className?: string;
+  onFormDataChange?: (data: FormData) => void;
 }
 
 export function FormRenderer({
@@ -26,6 +27,7 @@ export function FormRenderer({
   defaultValues,
   submitButtonText = "Submit",
   className = "mx-auto w-full max-w-lg space-y-6 rounded-md border p-6",
+  onFormDataChange,
   ...props
 }: FormRendererProps) {
   // Create default values if not provided
@@ -46,6 +48,13 @@ export function FormRenderer({
   const formState = useStore(form.store, (state) => state);
   const isFormValid = formState.canSubmit && formState.isValid;
   const isSubmitting = formState.isSubmitting;
+
+  // Call onFormDataChange whenever form values change
+  useEffect(() => {
+    if (onFormDataChange) {
+      onFormDataChange(formState.values as FormData);
+    }
+  }, [formState.values, onFormDataChange]);
 
   const handleSubmit = useCallback(
     (e: React.FormEvent) => {

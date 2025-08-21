@@ -10,7 +10,7 @@ import { useDocumentActions } from "../stores/document.store";
 import { StepWrapper } from "./step-wrapper";
 
 export function UploadStep() {
-  const { setFile } = useDocumentActions();
+  const { setFile, setFormData } = useDocumentActions();
   const fileInfoRef = useRef<HTMLDivElement>(null);
   const [errors, setErrors] = useState<string[]>([]);
   const { setActiveStep } = useStepper();
@@ -39,10 +39,11 @@ export function UploadStep() {
         }
 
         setFile(file);
+        setFormData({}); // Clear any existing form data
         setActiveStep(2);
       }
     },
-    [setFile, setActiveStep]
+    [setFile, setFormData, setActiveStep]
   );
 
   const handleFilesRejected = (fileRejections: string[]) => {

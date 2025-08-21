@@ -15,7 +15,7 @@ import { StepWrapper } from "./step-wrapper";
 
 export function FillFormStep() {
   const file = useDocumentFile();
-  const { reset, setFilledPdfBlob } = useDocumentActions();
+  const { reset, setFilledPdfBlob, setFormData } = useDocumentActions();
   const { setActiveStep } = useStepper();
   const { data, error, isLoading } = useTryCatch(
     () => convertPDFToFormSchema(file!),
@@ -34,6 +34,10 @@ export function FillFormStep() {
     if (error) return;
     setFilledPdfBlob(filledPdfBlob);
     setActiveStep(4);
+  };
+
+  const handleFormDataChange = (data: FormData) => {
+    setFormData(data);
   };
 
   const handleReset = () => {
@@ -58,6 +62,7 @@ export function FillFormStep() {
           <FormRenderer
             schema={data}
             onSubmit={handleFormSubmit}
+            onFormDataChange={handleFormDataChange}
             submitButtonText="Generate Document"
             className="mx-auto w-full max-w-2xl space-y-6"
           />
