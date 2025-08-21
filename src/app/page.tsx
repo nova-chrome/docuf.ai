@@ -1,5 +1,3 @@
-"use client";
-
 import { DocumentStepper } from "~/features/document/components/document-stepper";
 import { PDFViewer } from "~/features/document/components/pdf-viewer";
 
