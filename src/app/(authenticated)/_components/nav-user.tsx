@@ -1,6 +1,6 @@
 "use client";
 
-import { useUser } from "@clerk/nextjs";
+import { useAuth, useUser } from "@clerk/nextjs";
 import {
   BadgeCheck,
   Bell,
@@ -30,6 +30,7 @@ import {
 import { Skeleton } from "~/components/ui/skeleton";
 
 export function NavUser() {
+  const { signOut } = useAuth();
   const { user: clerkUser, isLoaded } = useUser();
   const { isMobile } = useSidebar();
 
@@ -115,7 +116,7 @@ export function NavUser() {
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>
+            <DropdownMenuItem onClick={() => signOut()}>
               <LogOut />
               Log out
             </DropdownMenuItem>
