@@ -1,10 +1,12 @@
 "use client";
 
-import { ClerkProvider } from "@clerk/nextjs";
+import { ClerkProvider, useAuth } from "@clerk/nextjs";
 import { HashbrownProvider } from "@hashbrownai/react";
-import { ConvexProvider, ConvexReactClient } from "convex/react";
+import { ConvexReactClient } from "convex/react";
+import { ConvexProviderWithClerk } from "convex/react-clerk";
 import { NuqsAdapter } from "nuqs/adapters/next";
 import { PropsWithChildren } from "react";
+import { env } from "~/env";
 
 export function Providers({ children }: PropsWithChildren) {
   return (
@@ -18,8 +20,12 @@ export function Providers({ children }: PropsWithChildren) {
   );
 }
 
-const convex = new ConvexReactClient(process.env.NEXT_PUBLIC_CONVEX_URL!);
+const convex = new ConvexReactClient(env.NEXT_PUBLIC_CONVEX_URL!);
 
 export function ConvexClientProvider({ children }: PropsWithChildren) {
-  return <ConvexProvider client={convex}>{children}</ConvexProvider>;
+  return (
+    <ConvexProviderWithClerk client={convex} useAuth={useAuth}>
+      {children}
+    </ConvexProviderWithClerk>
+  );
 }
