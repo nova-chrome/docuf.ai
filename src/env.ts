@@ -10,11 +10,13 @@ export const env = createEnv({
     NEXT_PUBLIC_CONVEX_URL: z.string().url().min(1),
   },
   server: {
+    CLERK_FRONTEND_API_URL: z.string().min(1),
     CLERK_SECRET_KEY: z.string().min(1),
     CONVEX_DEPLOYMENT: z.string().min(1),
     OPENAI_API_KEY: z.string().min(1),
   },
   runtimeEnv: {
+    CLERK_FRONTEND_API_URL: process.env.CLERK_FRONTEND_API_URL,
     CLERK_SECRET_KEY: process.env.CLERK_SECRET_KEY,
     CONVEX_DEPLOYMENT: process.env.CONVEX_DEPLOYMENT,
     OPENAI_API_KEY: process.env.OPENAI_API_KEY,
