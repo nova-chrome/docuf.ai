@@ -27,12 +27,28 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "~/components/ui/sidebar";
+import { Skeleton } from "~/components/ui/skeleton";
 
 export function NavUser() {
   const { user: clerkUser } = useUser();
   const { isMobile } = useSidebar();
 
-  if (!clerkUser) return null;
+  if (!clerkUser) {
+    return (
+      <SidebarMenu>
+        <SidebarMenuItem>
+          <SidebarMenuButton size="lg" disabled>
+            <Skeleton className="h-8 w-8 rounded-lg bg-muted-foreground/20" />
+            <div className="grid flex-1 text-left text-sm leading-tight gap-1">
+              <Skeleton className="h-4 w-24 bg-muted-foreground/20" />
+              <Skeleton className="h-3 w-32 bg-muted-foreground/20" />
+            </div>
+            <Skeleton className="ml-auto h-4 w-4 bg-muted-foreground/20" />
+          </SidebarMenuButton>
+        </SidebarMenuItem>
+      </SidebarMenu>
+    );
+  }
 
   const user = buildUser(clerkUser);
 
