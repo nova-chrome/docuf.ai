@@ -30,10 +30,10 @@ import {
 import { Skeleton } from "~/components/ui/skeleton";
 
 export function NavUser() {
-  const { user: clerkUser } = useUser();
+  const { user: clerkUser, isLoaded } = useUser();
   const { isMobile } = useSidebar();
 
-  if (!clerkUser) {
+  if (!isLoaded) {
     return (
       <SidebarMenu>
         <SidebarMenuItem>
