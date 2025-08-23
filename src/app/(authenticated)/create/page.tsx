@@ -17,6 +17,7 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "~/components/ui/tooltip";
+import { FormRenderer } from "~/features/form-renderer/components/form-renderer";
 import { cn } from "~/lib/utils";
 import { tryCatch } from "~/util/try-catch";
 import { api } from "../../../../convex/_generated/api";
@@ -187,9 +188,30 @@ export default function CreatePage() {
                 </form.AppField>
               </CardContent>
             </Card>
-            <Card>
-              <CardContent className="space-y-5"></CardContent>
-            </Card>
+            <FormRenderer
+              onSubmit={console.log}
+              schema={{
+                id: "preview-form",
+                title: "Preview Form",
+                description: "Preview the form as the user will see it",
+                fields: [
+                  {
+                    id: "name",
+                    name: "name",
+                    label: "Document Name",
+                    type: "text",
+                    required: true,
+                  },
+                  {
+                    id: "description",
+                    name: "description",
+                    label: "Description",
+                    type: "text",
+                    required: true,
+                  },
+                ],
+              }}
+            />
           </div>
         </div>
       </form>
