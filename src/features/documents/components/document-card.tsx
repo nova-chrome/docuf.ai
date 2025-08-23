@@ -17,11 +17,11 @@ import { cn } from "~/lib/utils";
 import { api } from "../../../../convex/_generated/api";
 
 interface DocumentCardProps {
-  doc: (typeof api.documents.getUserDocuments)["_returnType"][number];
+  doc: (typeof api.documents.getDocuments)["_returnType"][number];
 }
 
 export function DocumentCard({ doc }: DocumentCardProps) {
-  const deleteDocument = useMutation(api.documents.deleteUserDocument);
+  const deleteDocument = useMutation(api.documents.deleteDocument);
   const [showConfirm, setShowConfirm] = useState(false);
   const createdAt = formatDistance(new Date(doc._creationTime), new Date(), {
     addSuffix: true,

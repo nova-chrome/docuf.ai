@@ -7,7 +7,7 @@ import { Id } from "../../../../convex/_generated/dataModel";
 
 export default function DocumentPage() {
   const params = useParams<{ id: string }>();
-  const document = useQuery(api.documents.getUserDocument, {
+  const document = useQuery(api.documents.getDocument, {
     id: params.id as Id<"documents">,
   });
 
