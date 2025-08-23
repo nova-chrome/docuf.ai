@@ -2,6 +2,7 @@
 import { useMutation } from "convex/react";
 import { formatDistance } from "date-fns";
 import { CheckIcon, UndoIcon, XIcon } from "lucide-react";
+import Link from "next/link";
 import { useState } from "react";
 import { Button } from "~/components/ui/button";
 import {
@@ -46,7 +47,9 @@ export function DocumentCard({ doc }: DocumentCardProps) {
       )}
     >
       <CardHeader>
-        <CardTitle>{doc.name}</CardTitle>
+        <Link href={doc._id}>
+          <CardTitle className="hover:underline">{doc.name}</CardTitle>
+        </Link>
         <CardDescription className="text-xs">
           Created: {createdAt}
         </CardDescription>
