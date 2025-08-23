@@ -27,7 +27,7 @@ export default function RootLayout({ children }: Readonly<PropsWithChildren>) {
         className={cn(
           geistSans.variable,
           geistMono.variable,
-          "antialiased bg-background"
+          "antialiased bg-background h-full"
         )}
         suppressHydrationWarning
       >
