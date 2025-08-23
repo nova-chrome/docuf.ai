@@ -8,6 +8,16 @@ export const getUserDocuments = query({
   },
 });
 
+export const createDocument = mutation({
+  args: { name: v.string(), description: v.string() },
+  handler: async (ctx, args) => {
+    await ctx.db.insert("documents", {
+      name: args.name,
+      description: args.description,
+    });
+  },
+});
+
 export const deleteUserDocument = mutation({
   args: { id: v.id("documents") },
   handler: async (ctx, args) => {
