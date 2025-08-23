@@ -3,9 +3,10 @@
 import { useMutation } from "convex/react";
 import { InfoIcon, Loader2Icon } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useCallback } from "react";
+import { useCallback, useState } from "react";
 import z from "zod";
 import PdfUpload from "~/components/pdf-upload";
+import { Alert, AlertDescription, AlertTitle } from "~/components/ui/alert";
 import { Button } from "~/components/ui/button";
 import { Card, CardContent } from "~/components/ui/card";
 import { Input } from "~/components/ui/input";
@@ -30,6 +31,7 @@ export default function CreatePage() {
   const router = useRouter();
   const createDocument = useMutation(api.documents.createDocument);
   const generateUploadUrl = useMutation(api.documents.generateUploadUrl);
+  const [globalError, setGlobalError] = useState<string>();
 
   const form = useAppForm({
     defaultValues: {
@@ -40,6 +42,9 @@ export default function CreatePage() {
     onSubmit: async ({ value }) => {
       const { file, ...rest } = value;
       if (!file) return;
+
+      // Clear any previous errors
+      setGlobalError("");
 
       const result = await tryCatch(
         (async () => {
@@ -56,7 +61,9 @@ export default function CreatePage() {
       );
 
       if (result.error) {
-        // Handle error appropriately - could set form error state here
+        setGlobalError(
+          "An unexpected error occurred while creating the document."
+        );
         return;
       }
 
@@ -112,6 +119,15 @@ export default function CreatePage() {
               )}
             </form.Subscribe>
           </div>
+
+          {/* Global Error Display */}
+          {globalError && (
+            <Alert variant="destructive">
+              <AlertTitle>Please try again</AlertTitle>
+              <AlertDescription>{globalError}</AlertDescription>
+            </Alert>
+          )}
+
           <div className="grid grid-cols-2 gap-6">
             <Card>
               <CardContent className="space-y-5">
