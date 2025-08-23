@@ -43,7 +43,6 @@ export default function CreatePage() {
       const { file, ...rest } = value;
       if (!file) return;
 
-      // Clear any previous errors
       setGlobalError("");
 
       const result = await tryCatch(
