@@ -17,6 +17,7 @@ import {
   TooltipTrigger,
 } from "~/components/ui/tooltip";
 import { cn } from "~/lib/utils";
+import { tryCatch } from "~/util/try-catch";
 import { api } from "../../../../convex/_generated/api";
 
 const DocumentSchema = z.object({
@@ -39,14 +40,26 @@ export default function CreatePage() {
     onSubmit: async ({ value }) => {
       const { file, ...rest } = value;
       if (!file) return;
-      const postUrl = await generateUploadUrl();
-      const result = await fetch(postUrl, {
-        method: "POST",
-        headers: { "Content-Type": file.type },
-        body: file,
-      });
-      const { storageId } = await result.json();
-      await createDocument({ ...rest, storageId });
+
+      const result = await tryCatch(
+        (async () => {
+          const postUrl = await generateUploadUrl();
+          const response = await fetch(postUrl, {
+            method: "POST",
+            headers: { "Content-Type": file.type },
+            body: file,
+          });
+          const { storageId } = await response.json();
+          await createDocument({ ...rest, storageId });
+          return storageId;
+        })()
+      );
+
+      if (result.error) {
+        // Handle error appropriately - could set form error state here
+        return;
+      }
+
       router.push("/");
     },
     validators: {

@@ -13,6 +13,7 @@ import { Alert, AlertDescription, AlertTitle } from "~/components/ui/alert";
 import { Button } from "~/components/ui/button";
 import { useFileUpload, type FileWithPreview } from "~/hooks/use-file-upload";
 import { cn } from "~/lib/utils";
+import { tryCatch } from "~/util/try-catch";
 
 interface PdfUploadProps {
   maxSize?: number;
@@ -33,16 +34,22 @@ export default function PdfUpload({
 
   // PDF validation function
   const validatePdfFormFields = async (file: File): Promise<boolean> => {
-    try {
-      const arrayBuffer = await file.arrayBuffer();
-      const pdfDoc = await PDFDocument.load(arrayBuffer);
-      const form = pdfDoc.getForm();
-      const fields = form.getFields();
-      return fields.length > 0;
-    } catch (error) {
-      console.error("Error validating PDF:", error);
+    const { data, error } = await tryCatch(
+      (async () => {
+        const arrayBuffer = await file.arrayBuffer();
+        const pdfDoc = await PDFDocument.load(arrayBuffer);
+        const form = pdfDoc.getForm();
+        const fields = form.getFields();
+        return fields.length > 0;
+      })()
+    );
+
+    if (error) {
+      // Error validating PDF - returning false to indicate no valid form fields
       return false;
     }
+
+    return data;
   };
 
   const [
