@@ -3,10 +3,9 @@
 import { useMutation } from "convex/react";
 import { InfoIcon, Loader2Icon } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { PDFDocument } from "pdf-lib";
 import { useCallback } from "react";
 import z from "zod";
-import CoverUpload from "~/components/cover-upload";
+import PdfUpload from "~/components/pdf-upload";
 import { Button } from "~/components/ui/button";
 import { Card, CardContent } from "~/components/ui/card";
 import { Input } from "~/components/ui/input";
@@ -17,16 +16,13 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "~/components/ui/tooltip";
+import { cn } from "~/lib/utils";
 import { api } from "../../../../convex/_generated/api";
 
 const DocumentSchema = z.object({
   name: z.string().min(1, { message: "Document name is required." }),
   description: z.string(),
-  file: z
-    .instanceof(File, { message: "File is required." })
-    .refine((file) => file.type === "application/pdf", {
-      message: "Only PDF files are allowed.",
-    }),
+  file: z.instanceof(File, { message: "File is required." }),
 });
 
 export default function CreatePage() {
@@ -141,15 +137,23 @@ export default function CreatePage() {
                   {(field) => (
                     <field.FormItem className="space-y-1.5">
                       <field.FormControl>
-                        <CoverUpload
-                          onImageChange={(file) => {
-                            if (file) {
-                              field.handleChange(file);
+                        <PdfUpload
+                          className={cn(
+                            field.state.meta.errors.length > 0 &&
+                              "border border-red-500 rounded-xl"
+                          )}
+                          onFileChange={(file) => {
+                            if (!form.getFieldValue("name") && file) {
+                              form.resetField("name");
+                              form.setFieldValue(
+                                "name",
+                                file.name.replace(/\.[^/.]+$/, "")
+                              );
                             }
+                            field.handleChange(file || undefined);
                           }}
                         />
                       </field.FormControl>
-                      <field.FormMessage className="text-xs" />
                     </field.FormItem>
                   )}
                 </form.AppField>
@@ -163,25 +167,4 @@ export default function CreatePage() {
       </form>
     </form.AppForm>
   );
-}
-
-/**
- * Analyzes a PDF file to determine if it contains form fields
- * @param file - The PDF file to analyze
- * @returns Promise with form information
- */
-async function hasFormFields(file: File) {
-  // Convert file to array buffer
-  const arrayBuffer = await file.arrayBuffer();
-
-  // Load the PDF document
-  const pdfDoc = await PDFDocument.load(arrayBuffer);
-
-  // Get the form from the PDF
-  const form = pdfDoc.getForm();
-
-  // Get all form fields
-  const fields = form.getFields();
-
-  return fields.length > 0;
 }
