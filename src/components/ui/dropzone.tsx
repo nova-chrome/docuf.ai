@@ -1,6 +1,6 @@
 "use client";
 
-import { AlertCircle, UploadIcon } from "lucide-react";
+import { AlertCircleIcon, UploadIcon } from "lucide-react";
 import { useCallback } from "react";
 import { useDropzone, type Accept, type FileRejection } from "react-dropzone";
 import { cn } from "~/lib/utils";
@@ -107,7 +107,7 @@ export function Dropzone({
       {/* Error Messages */}
       {showErrorMessages && errorMessages.length > 0 && (
         <Alert variant="destructive">
-          <AlertCircle className="h-4 w-4" />
+          <AlertCircleIcon className="h-4 w-4" />
           <AlertDescription>
             {errorMessages.map((error, index) => (
               <p key={index} className="mb-1 last:mb-0">
