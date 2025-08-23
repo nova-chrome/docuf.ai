@@ -85,7 +85,7 @@ export function DocumentCard({ doc }: DocumentCardProps) {
           )}
         </CardAction>
       </CardHeader>
-      <CardContent>
+      <CardContent className="line-clamp-2 text-muted-foreground">
         {showConfirm ? (
           <p className="text-sm font-medium">
             Are you sure you want to delete this document?
