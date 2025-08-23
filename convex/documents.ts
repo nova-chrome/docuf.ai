@@ -1,6 +1,13 @@
 import { v } from "convex/values";
 import { mutation, query } from "./_generated/server";
 
+export const getUserDocument = query({
+  args: { id: v.id("documents") },
+  handler: async (ctx, args) => {
+    return ctx.db.get(args.id);
+  },
+});
+
 export const getUserDocuments = query({
   args: {},
   handler: async (ctx) => {
