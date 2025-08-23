@@ -1,7 +1,6 @@
 "use client";
 
 import { ClerkProvider, useAuth } from "@clerk/nextjs";
-import { HashbrownProvider } from "@hashbrownai/react";
 import { ConvexReactClient } from "convex/react";
 import { ConvexProviderWithClerk } from "convex/react-clerk";
 import { NuqsAdapter } from "nuqs/adapters/next";
@@ -12,9 +11,7 @@ export function Providers({ children }: PropsWithChildren) {
   return (
     <ClerkProvider>
       <ConvexClientProvider>
-        <HashbrownProvider url="/api/chat">
-          <NuqsAdapter>{children}</NuqsAdapter>
-        </HashbrownProvider>
+        <NuqsAdapter>{children}</NuqsAdapter>
       </ConvexClientProvider>
     </ClerkProvider>
   );
