@@ -136,7 +136,7 @@ export default function PdfUpload({
               {/* PDF Preview */}
               {pdfFile?.preview ? (
                 <iframe
-                  src={pdfFile.preview}
+                  src={`${pdfFile.preview}#toolbar=0`}
                   className="absolute inset-0 w-full h-full rounded-t-xl border-0"
                   title="PDF Preview"
                 />

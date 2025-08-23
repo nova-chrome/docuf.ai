@@ -98,15 +98,6 @@ export default function CreatePage() {
     },
   });
 
-  const handleSubmit = useCallback(
-    async (e: React.FormEvent) => {
-      e.preventDefault();
-      e.stopPropagation();
-      form.handleSubmit();
-    },
-    [form]
-  );
-
   return (
     <form.AppForm>
       <div className="space-y-6">
@@ -124,7 +115,10 @@ export default function CreatePage() {
           >
             {([canSubmit, isSubmitting]) => (
               <div className="flex items-center gap-3">
-                <Button type="submit" disabled={!canSubmit || isSubmitting}>
+                <Button
+                  onClick={form.handleSubmit}
+                  disabled={!canSubmit || isSubmitting}
+                >
                   {isSubmitting && (
                     <Loader2Icon className="mr-2 h-4 w-4 animate-spin" />
                   )}
@@ -152,7 +146,7 @@ export default function CreatePage() {
         )}
 
         <div className="grid grid-cols-2 gap-6">
-          <form noValidate onSubmit={handleSubmit}>
+          <form noValidate>
             <Card>
               <CardContent className="space-y-5">
                 <form.AppField name="name">
