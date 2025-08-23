@@ -1,7 +1,7 @@
 "use client";
 
 import { useMutation } from "convex/react";
-import { InfoIcon, Loader2Icon } from "lucide-react";
+import { FileText, InfoIcon, Loader2Icon } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useCallback, useState } from "react";
 import z from "zod";
@@ -17,7 +17,9 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "~/components/ui/tooltip";
+import { convertPDFToFormSchema } from "~/features/document/util/pdf-utils";
 import { FormRenderer } from "~/features/form-renderer/components/form-renderer";
+import type { FormSchema } from "~/features/form-renderer/types/form-schema.types";
 import { cn } from "~/lib/utils";
 import { tryCatch } from "~/util/try-catch";
 import { api } from "../../../../convex/_generated/api";
@@ -33,6 +35,28 @@ export default function CreatePage() {
   const createDocument = useMutation(api.documents.createDocument);
   const generateUploadUrl = useMutation(api.documents.generateUploadUrl);
   const [globalError, setGlobalError] = useState<string>();
+  const [formSchema, setFormSchema] = useState<FormSchema | null>(null);
+  const [isLoadingSchema, setIsLoadingSchema] = useState(false);
+
+  const handleFileChange = useCallback(async (file: File | null) => {
+    if (!file) {
+      setFormSchema(null);
+      return;
+    }
+
+    setIsLoadingSchema(true);
+
+    const result = await tryCatch(convertPDFToFormSchema(file));
+
+    if (result.error) {
+      console.error("Error converting PDF to form schema:", result.error);
+      setFormSchema(null);
+    } else {
+      setFormSchema(result.data);
+    }
+
+    setIsLoadingSchema(false);
+  }, []);
 
   const form = useAppForm({
     defaultValues: {
@@ -85,50 +109,50 @@ export default function CreatePage() {
 
   return (
     <form.AppForm>
-      <form noValidate onSubmit={handleSubmit}>
-        <div className="space-y-6">
-          <div className="flex justify-between">
-            <div className="space-y-2">
-              <h1 className="text-3xl font-bold tracking-tight">
-                Create Document
-              </h1>
-              <p className="text-muted-foreground">
-                Upload a PDF document and provide details to get started.
-              </p>
-            </div>
-            <form.Subscribe
-              selector={(state) => [state.canSubmit, state.isSubmitting]}
-            >
-              {([canSubmit, isSubmitting]) => (
-                <div className="flex items-center gap-3">
-                  <Button type="submit" disabled={!canSubmit || isSubmitting}>
-                    {isSubmitting && (
-                      <Loader2Icon className="mr-2 h-4 w-4 animate-spin" />
-                    )}
-                    Create Document
-                  </Button>
-                  <Tooltip>
-                    <TooltipTrigger>
-                      <InfoIcon className="h-4 w-4" />
-                    </TooltipTrigger>
-                    <TooltipContent sideOffset={4}>
-                      <p>A PDF document with form fields is required.</p>
-                    </TooltipContent>
-                  </Tooltip>
-                </div>
-              )}
-            </form.Subscribe>
+      <div className="space-y-6">
+        <div className="flex justify-between">
+          <div className="space-y-2">
+            <h1 className="text-3xl font-bold tracking-tight">
+              Create Document
+            </h1>
+            <p className="text-muted-foreground">
+              Upload a PDF document and provide details to get started.
+            </p>
           </div>
+          <form.Subscribe
+            selector={(state) => [state.canSubmit, state.isSubmitting]}
+          >
+            {([canSubmit, isSubmitting]) => (
+              <div className="flex items-center gap-3">
+                <Button type="submit" disabled={!canSubmit || isSubmitting}>
+                  {isSubmitting && (
+                    <Loader2Icon className="mr-2 h-4 w-4 animate-spin" />
+                  )}
+                  Create Document
+                </Button>
+                <Tooltip>
+                  <TooltipTrigger>
+                    <InfoIcon className="h-4 w-4" />
+                  </TooltipTrigger>
+                  <TooltipContent sideOffset={4}>
+                    <p>A PDF document with form fields is required.</p>
+                  </TooltipContent>
+                </Tooltip>
+              </div>
+            )}
+          </form.Subscribe>
+        </div>
 
-          {/* Global Error Display */}
-          {globalError && (
-            <Alert variant="destructive">
-              <AlertTitle>Please try again</AlertTitle>
-              <AlertDescription>{globalError}</AlertDescription>
-            </Alert>
-          )}
+        {/* Global Error Display */}
+        {globalError && (
+          <Alert variant="destructive">
+            <AlertTitle>Please try again</AlertTitle>
+            <AlertDescription>{globalError}</AlertDescription>
+          </Alert>
+        )}
 
-          <div className="grid grid-cols-2 gap-6">
+        <div className="grid grid-cols-2 gap-6">
+          <form noValidate onSubmit={handleSubmit}>
             <Card>
               <CardContent className="space-y-5">
                 <form.AppField name="name">
@@ -171,7 +195,7 @@ export default function CreatePage() {
                             field.state.meta.errors.length > 0 &&
                               "border border-red-500 rounded-xl"
                           )}
-                          onFileChange={(file) => {
+                          onFileChange={async (file) => {
                             if (!form.getFieldValue("name") && file) {
                               form.resetField("name");
                               form.setFieldValue(
@@ -180,6 +204,7 @@ export default function CreatePage() {
                               );
                             }
                             field.handleChange(file || undefined);
+                            await handleFileChange(file);
                           }}
                         />
                       </field.FormControl>
@@ -188,33 +213,48 @@ export default function CreatePage() {
                 </form.AppField>
               </CardContent>
             </Card>
+          </form>
+
+          {/* Form Preview */}
+          {isLoadingSchema ? (
+            <div className="flex items-center justify-center py-12">
+              <div className="flex flex-col items-center gap-3">
+                <Loader2Icon className="h-8 w-8 animate-spin text-primary" />
+                <p className="text-sm text-muted-foreground">
+                  Analyzing PDF form fields...
+                </p>
+              </div>
+            </div>
+          ) : formSchema ? (
             <FormRenderer
-              onSubmit={console.log}
-              schema={{
-                id: "preview-form",
-                title: "Preview Form",
-                description: "Preview the form as the user will see it",
-                fields: [
-                  {
-                    id: "name",
-                    name: "name",
-                    label: "Document Name",
-                    type: "text",
-                    required: true,
-                  },
-                  {
-                    id: "description",
-                    name: "description",
-                    label: "Description",
-                    type: "text",
-                    required: true,
-                  },
-                ],
+              onSubmit={(data) => {
+                console.log("Form data:", data);
               }}
+              schema={{
+                ...formSchema,
+                title: "Form Preview",
+                description: "Preview how users will see and fill the form",
+              }}
+              submitButtonText="Preview Submit"
             />
-          </div>
+          ) : (
+            <div className="flex items-center justify-center py-12">
+              <div className="flex flex-col items-center gap-4 text-center">
+                <div className="rounded-full bg-muted p-4">
+                  <FileText className="h-8 w-8 text-muted-foreground" />
+                </div>
+                <div className="space-y-2">
+                  <h3 className="font-medium">No PDF Uploaded</h3>
+                  <p className="text-sm text-muted-foreground max-w-xs">
+                    Upload a PDF document with form fields to see the preview
+                    here
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
-      </form>
+      </div>
     </form.AppForm>
   );
 }
