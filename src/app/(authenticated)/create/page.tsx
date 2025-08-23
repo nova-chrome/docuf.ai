@@ -218,7 +218,7 @@ export default function CreatePage() {
  * @param file - The PDF file to analyze
  * @returns Promise with form information
  */
-export async function hasFormFields(file: File) {
+async function hasFormFields(file: File) {
   // Convert file to array buffer
   const arrayBuffer = await file.arrayBuffer();
 
