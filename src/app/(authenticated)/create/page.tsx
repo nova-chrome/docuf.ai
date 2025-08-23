@@ -37,7 +37,7 @@ export default function CreatePage() {
       file: undefined as File | undefined,
     },
     onSubmit: async ({ value }) => {
-      const { file } = value;
+      const { file, ...rest } = value;
       if (!file) return;
       const postUrl = await generateUploadUrl();
       const result = await fetch(postUrl, {
@@ -46,7 +46,7 @@ export default function CreatePage() {
         body: file,
       });
       const { storageId } = await result.json();
-      createDocument({ ...value, storageId });
+      await createDocument({ ...rest, storageId });
       router.push("/");
     },
     validators: {
