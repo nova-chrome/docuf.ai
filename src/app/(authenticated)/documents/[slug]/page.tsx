@@ -1,7 +1,7 @@
 "use client";
 
 import { useQuery } from "convex/react";
-import { useParams } from "next/navigation";
+import { notFound, useParams } from "next/navigation";
 import { api } from "~/convex/_generated/api";
 
 export default function DocumentPage() {
@@ -9,6 +9,10 @@ export default function DocumentPage() {
   const document = useQuery(api.documents.getDocumentBySlug, {
     slug: params.slug,
   });
+
+  if (!document) {
+    return notFound();
+  }
 
   return <div>{document?.name}</div>;
 }

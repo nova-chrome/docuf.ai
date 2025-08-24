@@ -1,5 +1,6 @@
-import { DocumentsGrid } from "~/features/documents/components/documents-grid";
+import { redirect } from "next/navigation";
 
 export default function Home() {
-  return <DocumentsGrid />;
+  redirect("/documents");
+  return;
 }
