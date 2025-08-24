@@ -85,14 +85,10 @@ export function DocumentCard({ doc }: DocumentCardProps) {
           )}
         </CardAction>
       </CardHeader>
-      <CardContent className="line-clamp-2 text-muted-foreground">
-        {showConfirm ? (
-          <p className="text-sm font-medium">
-            Are you sure you want to delete this document?
-          </p>
-        ) : (
-          doc.description
-        )}
+      <CardContent className="line-clamp-2 text-muted-foreground truncate">
+        {showConfirm
+          ? "Are you sure you want to delete this document?"
+          : doc.description}
       </CardContent>
     </Card>
   );
