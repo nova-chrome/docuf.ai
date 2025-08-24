@@ -2,6 +2,7 @@
 
 import { useQuery } from "convex/react";
 import { notFound, useParams } from "next/navigation";
+import { Spinner } from "~/components/ui/spinner";
 import { api } from "~/convex/_generated/api";
 
 export default function DocumentPage() {
@@ -10,9 +11,18 @@ export default function DocumentPage() {
     slug: params.slug,
   });
 
-  if (!document) {
+  if (document === undefined) {
+    // full page loading spinner
+    return (
+      <div className="flex h-full items-center justify-center">
+        <Spinner />
+      </div>
+    );
+  }
+
+  if (document === null) {
     return notFound();
   }
 
-  return <div>{document?.name}</div>;
+  return <div>{document.name}</div>;
 }
