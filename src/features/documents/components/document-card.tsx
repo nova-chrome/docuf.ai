@@ -47,7 +47,7 @@ export function DocumentCard({ doc }: DocumentCardProps) {
       )}
     >
       <CardHeader>
-        <Link href={doc._id}>
+        <Link href={doc.slug}>
           <CardTitle className="hover:underline">{doc.name}</CardTitle>
         </Link>
         <CardDescription className="text-xs">
