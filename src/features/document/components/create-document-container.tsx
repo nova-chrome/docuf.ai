@@ -60,7 +60,7 @@ export function CreateDocumentContainer() {
             body: file,
           });
           const { storageId } = await response.json();
-          await createDocument({ name, description });
+          await createDocument({ name, storageId, description });
           return storageId;
         })()
       );
@@ -204,7 +204,6 @@ export function CreateDocumentContainer() {
                           }}
                         />
                       </field.FormControl>
-                      <field.FormMessage className="text-xs" />
                     </field.FormItem>
                   )}
                 </form.AppField>
