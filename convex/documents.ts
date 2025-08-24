@@ -69,12 +69,17 @@ export const createDocument = mutation({
     const baseSlug = generateSlug(args.name);
     const uniqueSlug = await ensureUniqueSlug(ctx, baseSlug, identity.subject);
 
-    return await ctx.db.insert("documents", {
+    await ctx.db.insert("documents", {
       name: args.name,
       slug: uniqueSlug,
       description: args.description,
       userId: identity.subject,
     });
+
+    return await ctx.db
+      .query("documents")
+      .withIndex("by_slug", (q) => q.eq("slug", uniqueSlug))
+      .unique();
   },
 });
 
