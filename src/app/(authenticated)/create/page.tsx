@@ -17,12 +17,12 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "~/components/ui/tooltip";
+import { api } from "~/convex/_generated/api";
 import { convertPDFToFormSchema } from "~/features/document/util/pdf-utils";
 import { FormRenderer } from "~/features/form-renderer/components/form-renderer";
 import type { FormSchema } from "~/features/form-renderer/types/form-schema.types";
 import { cn } from "~/lib/utils";
 import { tryCatch } from "~/util/try-catch";
-import { api } from "../../../../convex/_generated/api";
 
 const DocumentSchema = z.object({
   name: z.string().min(1, { message: "Document name is required." }),

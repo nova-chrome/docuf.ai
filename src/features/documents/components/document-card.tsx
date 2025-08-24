@@ -13,8 +13,8 @@ import {
   CardHeader,
   CardTitle,
 } from "~/components/ui/card";
+import { api } from "~/convex/_generated/api";
 import { cn } from "~/lib/utils";
-import { api } from "../../../../convex/_generated/api";
 
 interface DocumentCardProps {
   doc: (typeof api.documents.getDocuments)["_returnType"][number];
