@@ -59,7 +59,6 @@ export const createDocument = mutation({
   args: {
     name: v.string(),
     description: v.string(),
-    storageId: v.id("_storage"),
   },
   handler: async (ctx, args) => {
     const identity = await ctx.auth.getUserIdentity();
@@ -74,7 +73,6 @@ export const createDocument = mutation({
       name: args.name,
       slug: uniqueSlug,
       description: args.description,
-      storageId: args.storageId,
       userId: identity.subject,
     });
   },
@@ -97,7 +95,9 @@ export const deleteDocument = mutation({
       throw new ConvexError("Not authorized to delete this document");
     }
 
-    await ctx.storage.delete(document.storageId);
+    if (document.storageId) {
+      await ctx.storage.delete(document.storageId);
+    }
     await ctx.db.delete(args.id);
   },
 });

@@ -5,7 +5,7 @@ const documents = defineTable({
   name: v.string(),
   slug: v.string(),
   description: v.optional(v.string()),
-  storageId: v.id("_storage"),
+  storageId: v.optional(v.id("_storage")),
   userId: v.string(),
 })
   .index("by_slug", ["slug"])
