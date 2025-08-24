@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
   Breadcrumb,
@@ -53,8 +54,8 @@ export function LayoutHeader() {
                       {item.displayName}
                     </BreadcrumbPage>
                   ) : (
-                    <BreadcrumbLink href={item.href} className="capitalize">
-                      {item.displayName}
+                    <BreadcrumbLink asChild className="capitalize">
+                      <Link href={item.href}>{item.displayName}</Link>
                     </BreadcrumbLink>
                   )}
                 </BreadcrumbItem>
