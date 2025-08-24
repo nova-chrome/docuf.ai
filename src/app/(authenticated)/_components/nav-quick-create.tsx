@@ -58,7 +58,7 @@ export function NavQuickCreate() {
       const document = await createDocument(value);
       formApi.reset();
       if (document) {
-        router.push(document.slug);
+        router.push(`/documents/${document.slug}`);
       }
     },
     validators: {

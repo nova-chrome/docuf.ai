@@ -47,7 +47,7 @@ export function DocumentCard({ doc }: DocumentCardProps) {
       )}
     >
       <CardHeader>
-        <Link href={doc.slug}>
+        <Link href={`/documents/${doc.slug}`} className="w-fit">
           <CardTitle className="hover:underline">{doc.name}</CardTitle>
         </Link>
         <CardDescription className="text-xs">

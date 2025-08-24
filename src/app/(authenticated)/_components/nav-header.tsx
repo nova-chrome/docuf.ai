@@ -11,7 +11,7 @@ export function NavHeader() {
     <SidebarMenu>
       <SidebarMenuItem>
         <SidebarMenuButton size="lg" asChild>
-          <Link href="/">
+          <Link href="/documents">
             <Image
               src="/images/docufai-logo-sm.png"
               alt="Docuf.ai Logo"
