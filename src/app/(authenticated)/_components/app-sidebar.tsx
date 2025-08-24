@@ -4,8 +4,8 @@ import {
   SidebarFooter,
   SidebarHeader,
 } from "~/components/ui/sidebar";
+import { NavCreate } from "./nav-create";
 import { NavHeader } from "./nav-header";
-import { NavQuickCreate } from "./nav-quick-create";
 import { NavUser } from "./nav-user";
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
@@ -15,7 +15,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <NavHeader />
       </SidebarHeader>
       <SidebarContent>
-        <NavQuickCreate />
+        <NavCreate />
         {/* Nav stuff goes here */}
       </SidebarContent>
       <SidebarFooter>
