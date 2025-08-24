@@ -1,3 +1,5 @@
+"use client";
+
 import { useMutation } from "convex/react";
 import { InfoIcon, Loader2Icon } from "lucide-react";
 import { useRouter } from "next/navigation";
