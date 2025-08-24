@@ -20,7 +20,7 @@ export function NavCreate() {
           >
             <Link href="/create">
               <CirclePlusIcon />
-              <span>Quick Create</span>
+              <span>Create Document</span>
             </Link>
           </SidebarMenuButton>
         </SidebarMenuItem>
