@@ -60,7 +60,7 @@ export function CreateDocumentContainer() {
             body: file,
           });
           const { storageId } = await response.json();
-          await createDocument({ name, description, storageId });
+          await createDocument({ name, description });
           return storageId;
         })()
       );
