@@ -5,7 +5,7 @@ import { useStepper } from "~/components/ui/stepper";
 import {
   convertPDFToFormSchema,
   fillPdfWithFormData,
-} from "~/features/document/util/pdf-utils";
+} from "~/features/_old-document/util/pdf-utils";
 import { FormRenderer } from "~/features/form-renderer/components/form-renderer";
 import type { FormData } from "~/features/form-renderer/types/form-schema.types";
 import { useTryCatch } from "~/hooks/use-try-catch";

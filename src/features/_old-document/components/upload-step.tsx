@@ -4,7 +4,7 @@ import { useCallback, useRef, useState } from "react";
 import { Button } from "~/components/ui/button";
 import { Dropzone } from "~/components/ui/dropzone";
 import { useStepper } from "~/components/ui/stepper";
-import { checkPDFFormFields } from "~/features/document/util/pdf-utils";
+import { checkPDFFormFields } from "~/features/_old-document/util/pdf-utils";
 import { tryCatch } from "~/util/try-catch";
 import { useDocumentActions } from "../stores/document.store";
 import { StepWrapper } from "./step-wrapper";

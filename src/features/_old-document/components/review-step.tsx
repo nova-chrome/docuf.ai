@@ -1,7 +1,7 @@
 "use client";
 
 import { useStepper } from "~/components/ui/stepper";
-import { getPDFFormFieldDetails } from "~/features/document/util/pdf-utils";
+import { getPDFFormFieldDetails } from "~/features/_old-document/util/pdf-utils";
 import { useTryCatch } from "~/hooks/use-try-catch";
 import { useDocumentActions, useDocumentFile } from "../stores/document.store";
 import { StepWrapper } from "./step-wrapper";
