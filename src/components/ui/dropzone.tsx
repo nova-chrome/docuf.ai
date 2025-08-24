@@ -88,7 +88,7 @@ export function Dropzone({
           : children || (
               <>
                 <div className="mb-4">
-                  <UploadIcon className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
+                  <UploadIcon className="text-muted-foreground mx-auto mb-4 h-12 w-12" />
                 </div>
                 <p className="text-foreground mb-2">
                   {isDragActive
@@ -118,7 +118,7 @@ export function Dropzone({
               <Button
                 variant="link"
                 onClick={onClearErrors}
-                className="mt-2 h-auto p-0 text-destructive underline hover:no-underline"
+                className="text-destructive mt-2 h-auto p-0 underline hover:no-underline"
               >
                 Dismiss
               </Button>

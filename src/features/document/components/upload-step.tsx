@@ -66,7 +66,7 @@ export function UploadStep() {
         errorMessages={errors}
       >
         {({ open }) => (
-          <div className="text-center space-y-2">
+          <div className="space-y-2 text-center">
             <p className="text-foreground">Drag and drop your PDF here</p>
             <p className="text-muted-foreground">or</p>
             <Button onClick={open}>Browse Files</Button>

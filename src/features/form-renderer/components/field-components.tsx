@@ -175,7 +175,7 @@ export function CheckboxField({
       />
       <Label
         htmlFor={field.id}
-        className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+        className="text-sm leading-none font-medium peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
       >
         {field.label}
       </Label>
@@ -210,7 +210,7 @@ export function RadioField({
           />
           <Label
             htmlFor={`${field.id}-${option.value}`}
-            className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+            className="text-sm leading-none font-medium peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
           >
             {option.label}
           </Label>
@@ -246,7 +246,7 @@ export function SwitchField({
       />
       <Label
         htmlFor={field.id}
-        className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+        className="text-sm leading-none font-medium peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
       >
         {field.label}
       </Label>

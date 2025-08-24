@@ -8,8 +8,10 @@ export function DocumentsGrid() {
   const documents = useQuery(api.documents.getDocuments);
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 p-6">
-      {documents?.map((doc) => <DocumentCard key={doc._id} doc={doc} />)}
+    <div className="grid grid-cols-1 gap-6 p-6 md:grid-cols-2">
+      {documents?.map((doc) => (
+        <DocumentCard key={doc._id} doc={doc} />
+      ))}
     </div>
   );
 }

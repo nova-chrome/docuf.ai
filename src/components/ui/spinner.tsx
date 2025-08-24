@@ -21,7 +21,7 @@ const Spinner = React.forwardRef<HTMLDivElement, SpinnerProps>(
       >
         <svg
           className={cn(
-            "animate-spin text-muted-foreground",
+            "text-muted-foreground animate-spin",
             sizeClasses[size]
           )}
           xmlns="http://www.w3.org/2000/svg"

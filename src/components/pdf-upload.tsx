@@ -114,12 +114,12 @@ export default function PdfUpload({
       {/* Cover Upload Area */}
       <div
         className={cn(
-          "group relative overflow-hidden rounded-xl transition-all duration-200 border border-border",
+          "group border-border relative overflow-hidden rounded-xl border transition-all duration-200",
           isDragging
-            ? "border-dashed border-primary bg-primary/5"
+            ? "border-primary bg-primary/5 border-dashed"
             : hasFile
               ? "border-border bg-background hover:border-primary/50"
-              : "border-dashed border-muted-foreground/25 bg-muted/30 hover:border-primary hover:bg-primary/5"
+              : "border-muted-foreground/25 bg-muted/30 hover:border-primary hover:bg-primary/5 border-dashed"
         )}
         onDragEnter={handleDragEnter}
         onDragLeave={handleDragLeave}
@@ -137,22 +137,22 @@ export default function PdfUpload({
               {pdfFile?.preview ? (
                 <iframe
                   src={`${pdfFile.preview}#toolbar=0`}
-                  className="absolute inset-0 w-full h-full rounded-t-xl border-0"
+                  className="absolute inset-0 h-full w-full rounded-t-xl border-0"
                   title="PDF Preview"
                 />
               ) : (
-                <div className="absolute inset-0 flex items-center justify-center bg-muted/50 rounded-t-xl">
+                <div className="bg-muted/50 absolute inset-0 flex items-center justify-center rounded-t-xl">
                   <div className="flex flex-col items-center gap-3 text-center">
-                    <div className="rounded-full bg-primary/10 p-3">
-                      <FileText className="size-8 text-primary" />
+                    <div className="bg-primary/10 rounded-full p-3">
+                      <FileText className="text-primary size-8" />
                     </div>
                     <div>
-                      <h3 className="font-medium text-sm truncate max-w-[200px]">
+                      <h3 className="max-w-[200px] truncate text-sm font-medium">
                         {pdfFile?.file instanceof File
                           ? pdfFile.file.name
                           : "PDF Document"}
                       </h3>
-                      <p className="text-xs text-muted-foreground">
+                      <p className="text-muted-foreground text-xs">
                         {pdfFile?.file instanceof File
                           ? `${Math.round(pdfFile.file.size / 1024)} KB`
                           : "PDF File"}
@@ -164,20 +164,20 @@ export default function PdfUpload({
             </div>
 
             {/* Action buttons below PDF */}
-            <div className="flex items-center justify-between p-4 bg-muted/30 rounded-b-xl border-t">
-              <div className="flex flex-col min-w-0 flex-1 mr-4">
-                <h4 className="font-medium text-sm truncate">
+            <div className="bg-muted/30 flex items-center justify-between rounded-b-xl border-t p-4">
+              <div className="mr-4 flex min-w-0 flex-1 flex-col">
+                <h4 className="truncate text-sm font-medium">
                   {pdfFile?.file instanceof File
                     ? pdfFile.file.name
                     : "PDF Document"}
                 </h4>
-                <p className="text-xs text-muted-foreground">
+                <p className="text-muted-foreground text-xs">
                   {pdfFile?.file instanceof File
                     ? `${Math.round(pdfFile.file.size / 1024)} KB`
                     : "PDF File"}
                 </p>
               </div>
-              <div className="flex gap-2 flex-shrink-0">
+              <div className="flex flex-shrink-0 gap-2">
                 <Button
                   type="button"
                   onClick={openFileDialog}
@@ -207,16 +207,16 @@ export default function PdfUpload({
             className="flex h-96 w-full cursor-pointer flex-col items-center justify-center gap-4 p-8 text-center"
             onClick={openFileDialog}
           >
-            <div className="rounded-full bg-primary/10 p-4">
-              <CloudUpload className="size-8 text-primary" />
+            <div className="bg-primary/10 rounded-full p-4">
+              <CloudUpload className="text-primary size-8" />
             </div>
 
             <div className="space-y-2">
               <h3 className="text-lg font-semibold">Upload PDF Document</h3>
-              <p className="text-sm text-muted-foreground">
+              <p className="text-muted-foreground text-sm">
                 Drag and drop a PDF file here, or click to browse
               </p>
-              <p className="text-xs text-muted-foreground">
+              <p className="text-muted-foreground text-xs">
                 Max size: 10MB • Only PDF files with form fields are supported
               </p>
             </div>

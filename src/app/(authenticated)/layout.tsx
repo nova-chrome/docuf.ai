@@ -10,8 +10,8 @@ export default function AuthenticatedLayout({ children }: PropsWithChildren) {
       <AppSidebar />
       <SidebarInset className="flex-1 overflow-hidden">
         <LayoutHeader />
-        <ScrollArea className="max-h-[calc(100vh-80px)] h-full">
-          <div className="flex flex-1 flex-col h-full p-7">{children}</div>
+        <ScrollArea className="h-full max-h-[calc(100vh-80px)]">
+          <div className="flex h-full flex-1 flex-col p-7">{children}</div>
           <ScrollBar orientation="horizontal" />
         </ScrollArea>
       </SidebarInset>

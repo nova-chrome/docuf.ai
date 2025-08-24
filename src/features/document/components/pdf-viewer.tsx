@@ -28,10 +28,10 @@ export function PDFViewer() {
 
       try {
         setIsGeneratingPdf(true);
-        
+
         // Check if we have any form data to fill
         const hasFormData = Object.keys(formData).length > 0;
-        
+
         if (hasFormData) {
           // Generate filled PDF
           currentUrl = await fillPdfWithFormDataRealtime(file, formData);
@@ -39,7 +39,7 @@ export function PDFViewer() {
           // Show original PDF
           currentUrl = URL.createObjectURL(file);
         }
-        
+
         setPdfUrl(currentUrl);
       } catch (error) {
         console.error("Error generating PDF URL:", error);
@@ -63,9 +63,9 @@ export function PDFViewer() {
 
   if (!file) {
     return (
-      <Card className="h-full flex flex-col items-center justify-center p-8 text-center bg-gray-50">
-        <FileIcon className="size-16 text-gray-400 mb-4" />
-        <h3 className="text-lg font-medium text-gray-600 mb-2">
+      <Card className="flex h-full flex-col items-center justify-center bg-gray-50 p-8 text-center">
+        <FileIcon className="mb-4 size-16 text-gray-400" />
+        <h3 className="mb-2 text-lg font-medium text-gray-600">
           No PDF Selected
         </h3>
         <p className="text-sm text-gray-500">
@@ -89,11 +89,11 @@ export function PDFViewer() {
           {pdfUrl ? (
             <iframe
               src={pdfUrl}
-              className="w-full h-full border rounded"
+              className="h-full w-full rounded border"
               title="PDF Preview"
             />
           ) : (
-            <div className="w-full h-full flex items-center justify-center bg-gray-100 rounded border">
+            <div className="flex h-full w-full items-center justify-center rounded border bg-gray-100">
               <p className="text-gray-500">Loading PDF...</p>
             </div>
           )}

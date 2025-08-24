@@ -50,15 +50,15 @@ export function ReviewStep() {
       <div className="min-h-[300px]">
         {data && data.length > 0 && (
           <div ref={scrollDivRefToTop}>
-            <h3 className="text-lg font-semibold mb-3">
+            <h3 className="mb-3 text-lg font-semibold">
               Form Fields JSON Data:
             </h3>
-            <div className="bg-gray-50 rounded-lg p-4 overflow-auto max-h-96">
-              <pre className="text-sm font-mono whitespace-pre-wrap">
+            <div className="max-h-96 overflow-auto rounded-lg bg-gray-50 p-4">
+              <pre className="font-mono text-sm whitespace-pre-wrap">
                 {JSON.stringify(data, null, 2)}
               </pre>
             </div>
-            <p className="text-sm text-gray-600 mt-2">
+            <p className="mt-2 text-sm text-gray-600">
               Found {data.length} form field{data.length !== 1 ? "s" : ""}
             </p>
           </div>

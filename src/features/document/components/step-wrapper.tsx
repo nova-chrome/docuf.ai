@@ -84,14 +84,14 @@ export function StepWrapper({
             </AlertDescription>
           </Alert>
         ) : isLoading ? (
-          <div className="flex flex-col items-center justify-center py-12 px-4 mb-6">
+          <div className="mb-6 flex flex-col items-center justify-center px-4 py-12">
             <div className="flex flex-col items-center space-y-4">
               <Spinner size="lg" />
-              <div className="text-center space-y-2">
-                <p className="text-lg font-medium text-foreground">
+              <div className="space-y-2 text-center">
+                <p className="text-foreground text-lg font-medium">
                   {loadingTitle}
                 </p>
-                <p className="text-sm text-muted-foreground max-w-md">
+                <p className="text-muted-foreground max-w-md text-sm">
                   {loadingDescription}
                 </p>
               </div>

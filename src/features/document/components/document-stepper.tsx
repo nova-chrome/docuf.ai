@@ -41,7 +41,7 @@ export function DocumentStepper() {
       {/* Vertical Stepper Navigation */}
       <div className="flex h-full">
         {/* Steps Navigation */}
-        <div className="pr-6 flex-shrink-0">
+        <div className="flex-shrink-0 pr-6">
           <StepperNav className="flex flex-col">
             {DOCUMENT_STEPS.map((step, index) => (
               <StepperItem
@@ -52,7 +52,7 @@ export function DocumentStepper() {
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <div className="flex items-center justify-center py-2">
-                      <StepperIndicator className="w-10 h-10 cursor-pointer flex-shrink-0">
+                      <StepperIndicator className="h-10 w-10 flex-shrink-0 cursor-pointer">
                         <step.icon className="size-4" />
                       </StepperIndicator>
                     </div>
@@ -62,7 +62,7 @@ export function DocumentStepper() {
                   </TooltipContent>
                 </Tooltip>
                 {DOCUMENT_STEPS.length > index + 1 && (
-                  <StepperSeparator className="w-0.5 h-6" />
+                  <StepperSeparator className="h-6 w-0.5" />
                 )}
               </StepperItem>
             ))}
@@ -70,7 +70,7 @@ export function DocumentStepper() {
         </div>
 
         {/* Step Content */}
-        <div className="flex-1 min-w-0">
+        <div className="min-w-0 flex-1">
           <StepperPanel className="h-full">
             {DOCUMENT_STEPS.map((step, index) => (
               <StepperContent
@@ -78,7 +78,7 @@ export function DocumentStepper() {
                 value={index + 1}
                 className="mt-0 h-full"
               >
-                <Card className="w-full h-full">
+                <Card className="h-full w-full">
                   {stepsMap[step.key as keyof typeof stepsMap]}
                 </Card>
               </StepperContent>
