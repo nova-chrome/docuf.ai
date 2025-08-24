@@ -1,4 +1,4 @@
-import { v } from "convex/values";
+import { ConvexError, v } from "convex/values";
 import type { MutationCtx } from "./_generated/server";
 import { mutation, query } from "./_generated/server";
 
@@ -6,23 +6,51 @@ import { mutation, query } from "./_generated/server";
 export const getDocumentBySlug = query({
   args: { slug: v.string() },
   handler: async (ctx, args) => {
-    return ctx.db
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) {
+      return null;
+    }
+
+    const document = await ctx.db
       .query("documents")
       .withIndex("by_slug", (q) => q.eq("slug", args.slug))
       .unique();
+
+    if (!document) {
+      return null;
+    }
+
+    if (document.userId !== identity.subject) {
+      return null;
+    }
+
+    return document;
   },
 });
 
 export const getDocuments = query({
   args: {},
   handler: async (ctx) => {
-    return ctx.db.query("documents").collect();
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) {
+      return [];
+    }
+
+    return ctx.db
+      .query("documents")
+      .withIndex("by_user_id", (q) => q.eq("userId", identity.subject))
+      .collect();
   },
 });
 
 // -----===[Mutations]===-----
 export const generateUploadUrl = mutation({
   handler: async (ctx) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) {
+      throw new ConvexError("Not authenticated");
+    }
+
     return await ctx.storage.generateUploadUrl();
   },
 });
@@ -34,14 +62,20 @@ export const createDocument = mutation({
     storageId: v.id("_storage"),
   },
   handler: async (ctx, args) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) {
+      throw new ConvexError("Not authenticated");
+    }
+
     const baseSlug = generateSlug(args.name);
-    const uniqueSlug = await ensureUniqueSlug(ctx, baseSlug);
+    const uniqueSlug = await ensureUniqueSlug(ctx, baseSlug, identity.subject);
 
     return await ctx.db.insert("documents", {
       name: args.name,
       slug: uniqueSlug,
       description: args.description,
       storageId: args.storageId,
+      userId: identity.subject,
     });
   },
 });
@@ -49,15 +83,26 @@ export const createDocument = mutation({
 export const deleteDocument = mutation({
   args: { id: v.id("documents") },
   handler: async (ctx, args) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) {
+      throw new ConvexError("Not authenticated");
+    }
+
     const document = await ctx.db.get(args.id);
-    if (!document) throw new Error("Document not found");
+    if (!document) {
+      throw new ConvexError("Document not found");
+    }
+
+    if (document.userId !== identity.subject) {
+      throw new ConvexError("Not authorized to delete this document");
+    }
+
     await ctx.storage.delete(document.storageId);
     await ctx.db.delete(args.id);
   },
 });
 
 // -----===[Helpers]===-----
-// Helper function to convert a name to a URL-friendly slug
 function generateSlug(name: string): string {
   return name
     .toLowerCase()
@@ -67,10 +112,10 @@ function generateSlug(name: string): string {
     .replace(/^-+|-+$/g, ""); // Remove leading and trailing hyphens
 }
 
-// Helper function to ensure slug uniqueness
 async function ensureUniqueSlug(
   ctx: MutationCtx,
-  baseSlug: string
+  baseSlug: string,
+  userId: string
 ): Promise<string> {
   let slug = baseSlug;
   let counter = 1;
@@ -79,6 +124,7 @@ async function ensureUniqueSlug(
     const existing = await ctx.db
       .query("documents")
       .withIndex("by_slug", (q) => q.eq("slug", slug))
+      .filter((q) => q.eq(q.field("userId"), userId))
       .first();
 
     if (!existing) {

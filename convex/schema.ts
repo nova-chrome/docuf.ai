@@ -6,7 +6,10 @@ const documents = defineTable({
   slug: v.string(),
   description: v.optional(v.string()),
   storageId: v.id("_storage"),
-}).index("by_slug", ["slug"]);
+  userId: v.string(),
+})
+  .index("by_slug", ["slug"])
+  .index("by_user_id", ["userId"]);
 
 export default defineSchema({
   documents,
