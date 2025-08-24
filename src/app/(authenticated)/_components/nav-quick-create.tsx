@@ -107,6 +107,7 @@ export function NavQuickCreate() {
                       <field.FormItem className="space-y-1.5">
                         <field.FormControl>
                           <Textarea
+                            rows={4}
                             placeholder="Description"
                             value={field.state.value}
                             onChange={(e) => field.handleChange(e.target.value)}
